@@ -1,0 +1,32 @@
+- [Role & Team](user_role_team.md) — WSD SW team manager, reports to KP, roster, GenAI split, Mythos/Git/Maverick leadership
+- [Engineering Principles](feedback_engineering_principles.md) — no-reinvent-wheels, side-by-side testing, 80/20 scoping, AI cost-routing, urgent-request vetting, scan discipline
+- [AWS Resiliency Initiative](project_aws_resiliency.md) — multi-region review; pen-test eval closed (AWS-side bug); Aurora/Snowflake/Prisma risks
+- [GenAI Program](project_genai_program.md) — Claude Code/Cursor governance, $100K/mo budget, Vectara agent quality, Cursor sunset
+- [AI Front-End Rebuild](project_ai_frontend_rebuild.md) — DevCraft lapse → ASP.NET Core+React rebuild, all portals complete
+- [Mythos Security Scanning](project_mythos_security_scanning.md) — GTO-mandated repo scan program, SW + non-SW tracks
+- [Git Repo Standardization](project_git_repo_standardization.md) — GitHub ownership/naming cleanup triggered by Mythos
+- [Maverick Agentic Platform](project_maverick_agentic_platform.md) — GTO multi-agent orchestration eval, Die Inventory Agent pilot
+- [Certificate Lifecycle (Keyfactor)](project_certificate_lifecycle_keyfactor.md) — cert validity shortening 200→100→47 days by 2029
+- [zDB Large-File Risk](project_zdb_large_file_risk.md) — hard CAP + NPI/Prod split proposal, still pending PE
+- [TUDAS OOM → SQLite](project_tudas_oom_sqlite.md) — memory-spike fix, implementation in progress
+- [pCD-V/Clotho V7](project_pcd_clotho_v7.md) — wafer migration, prod target now 12/04/2026, parallel V6 sub-migration
+- [GD-Breakdown/Flex-Plot](project_gd_breakdown_flexplot.md) — in production, FCM Analyzer V1.1.0 tie-in
+- [NXG Pipeline & Raptor](project_nxg_pipeline_and_raptor.md) — Raptor Phase 1 complete, Baku rollout started
+- [GCP-API Umbrella](project_gcp_api_umbrella.md) — Yu Han-owned GCP gateway project, completed 05/26/2026
+- [Amkor Vietnam Expansion](project_amkor_vietnam_expansion.md) — ATK→ATV capacity shift, infra costs, SFTP requirement
+- [WSD Systems Reference](reference_wsd_systems.md) — JIRA, GitHub org, KB articles, projects site (roadmap sheet now obsolete)
+- [2023 Annual Review](project_2023_annual_review.md) — ww01-52 archive: Cycode/AssumeRole wave 1, Clotho V3.3.1/V4.x, Dev-Proto, earliest GenAI seed (Dec 2023)
+- [2024 Annual Review](project_2024_annual_review.md) — ww01-52 archive: Cloud SFTP closure, MLOps GA, GTO Jira boarding, points to 3 new-initiative files below
+- [Radar-Jira Service Manager](project_radar_jira_service_manager.md) — Raptor↔GTO-Jira sync, Phase I shipped/stabilized 2024, OIDC auth deprecation risk (target 09/30/2025)
+- [Clotho NXG/Magnus Roadmap](project_clotho_nxg_magnus_roadmap.md) — 2024 DEC2/Kafka/Gen-QS investigation, 28-item Clotho backlog, "Magnus" next-gen Clotho stalled mid-2024
+- [WSD Logistics Data Integrity / IDI](project_wsd_logistics_data_integrity.md) — Wingra's cross-tool design-data integration, Phase 1 (Die Tapeout) shipped, later phases on hold
+- [Supplier Cybersecurity Audit](project_supplier_cybersecurity_audit.md) — CM/subcon cyber-resiliency audit, Raptor/AIS-driven, Jan 2025
+- [OKTA SSO / Dual-JWT Architecture](project_okta_sso_jwt_architecture.md) — Jan 2025 decision: OKTA-only auth + ID.Pass/access-token dual JWT across WSD web apps; full rollout COMPLETE 05/27/2025
+- [CM/Subcon CI/CD Maintenance Automation](project_cicd_maintenance_automation.md) — WSD.CICD auto-updater, ~100 deployments fleet-wide, completed 01/14/2025
+- [ViTrox Production Toolkit](project_vitrox_production_toolkit.md) — DPAT/LBF decrypt toolkit for ViTrox T&R outsourcing, shipped Jan 2025
+- [AWS VPN SD-WAN Migration](project_aws_vpn_sdwan_migration.md) — Cisco→Velo VPN cutover per BRCM IT, all 3 regions (SG/Tokyo/Oregon) complete 02/11/2025
+- [TVER Data Collection](project_tver_data_collection.md) — Inari TVER calibration data collect/parse/query, completed 03/28/2025
+- [Octa-Site Wafer Probe](project_octasite_wafer_probe.md) — early-stage push to speed up wafer trace-data pipeline for faster probe hardware, initiated 09/05/2025
+- [SG DC → TK DC Migration](project_sgdc_to_tkdc_migration.md) — GTO mandate dropped 10/14/2025, WSD Windows servers/CIFS storage stay in Singapore
+- [Cloud SFTP Phase 2 / Wafer Planning](project_cloud_sftp_phase2_wafer_planning.md) — automating Yellow/Red Internal Wafer Planning data types, FormFactor onboarded 10/21/2025
+- [TDD Type-29 AOP Parsing](project_tdd_type29_aop_parsing.md) — new zDB Type 29 to fix manual annual AOP test-time budgeting, target end-Jan 2026

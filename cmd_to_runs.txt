@@ -1,0 +1,12 @@
+periodically ask me to 
+summarize what you currently understand about my role and priorities
+
+
+This isn't about hitting a data volume, it's about hitting a trust threshold:
+- Run /log regularly for a while.
+- Do the periodic "summarize what you understand about my role" checkpoint we discussed — 2-3 times, roughly monthly.
+- If those checkpoints come back accurate with little or no correction needed, that's the real signal — memory is stable, not "sounds right but thin."
+
+At that point, move to Proposal B: pick one narrow, low-stakes, recurring task you already do by hand (e.g. a weekly status digest, a first-pass on a doc review), and let it produce a draft for that specific task — never sent, never published, always landing in an outbox for you to approve or edit. You're not handing over judgment, you're removing the blank-page step.
+
+Only after a specific draft task has run long enough that your edits are consistently minor would I suggest tightening the loop further (Proposal C — approval-gated but closer to "just do it"). Even then, anything externally visible (an email, a Slack post, a merged doc) keeps a human approval gate — that's the harness you asked for at the start, and it doesn't go away just because trust goes up.
