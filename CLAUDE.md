@@ -61,7 +61,7 @@ one draft-only task.
   archives the source only after the memory write succeeds, never fabricates or guesses on
   ambiguous/sensitive content (flags it instead).
 - Memory folder for this project:
-  `C:\Users\hany\.claude\projects\C--Temp-AllCode-Calude-brcm-WSD-Artifact-Rig-GENAI-ActivityLog-SWTeamDirections\memory\`
+  `C:\Users\hany\.claude\projects\C--Temp-AllCode-Claude-hy-cc-job-digitalclone\memory\`
 
 ## Layout decision: flat, not nested
 

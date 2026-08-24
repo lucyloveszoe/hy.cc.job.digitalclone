@@ -6,8 +6,8 @@ This project has **two copies** of memory:
    Path pattern: `C:\Users\<you>\.claude\projects\<encoded-repo-path>\memory\`
    The `<encoded-repo-path>` segment is a direct encoding of this repo's absolute path
    (drive letter, folders, dots all turned into dashes). Today that's:
-   `C--Temp-AllCode-Calude-brcm-WSD-Artifact-Rig-GENAI-ActivityLog-SWTeamDirections`
-   for the repo at `C:\Temp\AllCode\Calude.brcm\WSD.Artifact.Rig.GENAI.ActivityLog.SWTeamDirections`.
+   `C--Temp-AllCode-Claude-hy-cc-job-digitalclone`
+   for the repo at `C:\Temp\AllCode\Claude\hy.cc.job.digitalclone`.
 
 2. **In-repo snapshot** — `memory/` at the repo root. Committed to git (this repo is
    private/Broadcom-internal, so that's an accepted risk). This is a manual backup, not

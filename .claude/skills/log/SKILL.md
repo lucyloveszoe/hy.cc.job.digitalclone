@@ -12,7 +12,7 @@ It never sends, publishes, or executes anything — read and file only.
 ## Memory location
 
 The memory store for this project lives at:
-`C:\Users\hany\.claude\projects\C--Temp-AllCode-Calude-brcm-WSD-Artifact-Rig-GENAI-ActivityLog-SWTeamDirections\memory\`
+`C:\Users\hany\.claude\projects\C--Temp-AllCode-Claude-hy-cc-job-digitalclone\memory\`
 
 `MEMORY.md` in that folder is the index. Individual memory files sit alongside it.
 Follow the memory frontmatter format and the four types (user/feedback/project/reference)
