@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: b57dbea7-e0ff-4ed2-a55d-4625560a26cf
-  modified: 2026-08-24T05:34:21.635Z
+  modified: 2026-08-25T20:28:55.920Z
 ---
 
 GTO-mandated code security scanning program ("Mythos"), using Claude models (initially claude-sonnet-4-6, later "Mythos-5") via a GTO tool called "brcm-scan." Runs across two tracks:
@@ -53,5 +53,7 @@ Yu Han personally led the SW-owned-repo scan to completion and temporarily cover
 **Continued progress, both counts still reconciling cleanly (07/29/2025)**: Cycode 304-issue list now **283 resolved, 21 to-do** (up from 276/28 on 07/22). AWS-secret-key inventory: **55 deleted, 1 pending** (out of the same 56 total — up from 54/2). Service-account IaC rotation Stage I (see [[project-aws-resiliency]]) now has a concrete estimate: Ken expects ~4 weeks to complete, with a 3-week transition window.
 
 **Both cleanup tracks fully CLOSED (08/04/2025)**: the Cycode 304-issue curated list reached **all 304 resolved** (up from 283/21 on 07/29), and the AWS-secret-key inventory reached **all 56 leaked keys fixed** (up from 55/1). This closes out the ~7-month Cycode secrets-cleanup effort that began 04/08/2025. Ongoing/durable follow-through: Ken's Terraform-based IAM-key-recreation work continues as infrastructure hygiene (WSD Notification, OEE, ondemand, proclog, PCD daemon, Wudas, PPYCC roles all migrated to IaC), and a DSM auto-refresh script for 30 S3 instance configs passed its 2-week monitoring window clean. Treat the Cycode secrets-remediation program itself as complete; the durable end-state (centralize credentials in S3, rotate via CI/CD/IaC) lives on as standing practice, now folded into the broader 90-day AWS credential-rotation policy (see [[project-aws-resiliency]]).
+
+**ww34 snapshot (08/25/2026)**: SW-owned-repo track now in **Round 2** (of the Round1→fix→Round2→review/fix→Round3 M-Rounds workflow — see [[feedback-engineering-principles]] for Ken's specific "E then E+x" delta-scan pattern this workflow is built on). By 08/11/2026 Kin Lum had completed Round-1 fixes for 5 repos (WSD.Framework.pCD.CMDaemon, WSD.Jwt, Wsd.Lib, WSD.Framework.EBRDevProto.Daemon, WSD.Framework.zDB.IWS); as of 08/25/2026 Round 2 full scan is running and each project owner must triage new findings (FP / Won't-Fix / To-Fix, with a documented "why") and recommend whether a Round 3 is warranted. Non-SW track restated at the same **135 repos / 1,800 findings (213 false-positive, 1,587 outstanding)** figures already tracked above — no material change this week. GitLab FtC track is explicitly **skipped from further follow-up per FtC management's own request**. Claude/Mythos-scan cost tracking (separate from the $30K cap already noted as blown by 07/28/2026) shows a one-time spike of **$1,794.08 on 08/03/2026**, dropping back to near-zero ($0.11 on 08/10, $1.58 on 08/21) — consistent with the "unexplained cost spike" already flagged, now shown to be a single-week event rather than sustained.
 
 **How to apply:** treat this as an ongoing compliance program with its own deadlines (SW-owned fix target 10/13/2026); update finding counts/remediation status here as they change. Related governance cleanup: [[project-git-repo-standardization]]. Related security posture data: Prisma Cloud findings are tracked in [[project-aws-resiliency]].

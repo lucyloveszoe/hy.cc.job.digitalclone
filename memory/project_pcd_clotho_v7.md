@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: b57dbea7-e0ff-4ed2-a55d-4625560a26cf
-  modified: 2026-08-24T06:30:37.127Z
+  modified: 2026-08-25T20:29:18.328Z
 ---
 
 Major multi-month platform-consolidation initiative: migrating legacy VB6 wafer test-plan code into .NET 6+, absorbing wafer-specific test logic into the Clotho execution engine. The team chose the "Fully Integrated" architecture option (pCD-V + U-Portal) over alternatives. Target: trial release 08/14/2026, production Nov 2026.
@@ -51,6 +51,10 @@ This initiative is also where Yu Han enforced the Clotho/pCD architecture bounda
 **V6/Module track: Git LFS/CRLF issue fully resolved, TPA SSOT migration fully complete — dev phase wrapping up (12/30/2025)**: pCD Daemon's LFS update+testing and its large-file-cache improvement are both now Complete. **Git CRLF bug root-caused and fixed**: Git only auto-converts LF→CRLF when a file mixes CR+LF and LF; fix applied via a `.gitattributes` entry (`* -text`) that treats every file as binary and disables line-ending conversion entirely on checkout/commit, plus a version-tagged `.gitattributes` that pCD Client auto-downloads from the template repo when a newer version exists. Also fixed: a package-version-list retrieval bug (root cause — `manifest.hash` lived only inside the zip, not on the shared folder; fix — pCD Daemon now also writes a protected `.jsonx` copy of the manifest to the shared folder, with a defined lookup order: `manifest.hash` → `.sjnx` → package zip → not-found exception) and pCD Client now embeds TP/TCF/TL version info into `manifest.hash`. Only remaining piece: bundling a Git-installation prerequisite into the pCD Client installer (in progress). **TPA waveform/vector migration to SSOT is now fully Complete** (both Kushan's waveform migration and Jay's vector migration done) — closing that migration workstream entirely. Next: full integration testing after New Year, sharing with TDG/PE around mid-January 2026.
 
 **Parallel Clotho V6 sub-migration (ww33)**: Kuok Liang begins migrating a wafer test plan to Clotho **V6** (not V7) starting late September 2026 — a separate near-term migration alongside the main V7 program above.
+
+**Clotho V7.x release plan finalized (ww34, 08/25/2026)**: Clotho V5.3 (MQTT/Site-2-Site features) officially released 08/23/2026 after Chee-on's 4-month trial buy-off — see release site sites.google.com/broadcom.com/clotho/home. The V7 line now splits explicitly: **V7.0 = pCD-V for Wafer ONLY** (previously-planned minor Module features pushed out to V7.1, since PE/NPI confirmed there's no use for Clotho V7.x without the V5.3 feature migration); **V7.1 = Module Catch-up ONLY**, built on top of V7.0 — migrates the V5.3 MQTT Site-2-Site Communication features into the Module line, adds a new **"-XF" product tag** (Chin Keong's request, combining RF1+NFR test into a single process), plus the minor Module features deferred from V7.0; **V7.2 (Optional)** = bug fixes plus minor features to ensure Module and Wafer can be co-supported; **V8.0** = the future primary unified version supporting both Wafer and Module. Goal stated by YK/KinLum/Yu Han: balance resourcing against NPI/PE stakeholder expectations rather than rush a single monolithic V7.
+
+**Related: "Wafer Regen Phase2 API" evaluation (Jiapeng, initiated 08/16/2026 per a request from Foo Kit)**: Jiapeng estimates ~4 weeks of work; Yu Han ran a clarification session with Jiapeng specifically to look for high-level "wheel" reuse between this API and the pCD-V wafer program above — relevant since Online/Offline Wafer Regen Tools already appear as owned sub-components in this project's SW/Wafer ownership table (Online: Kin Lum/Tingyu; Offline: YK/Choo-Yau). Track whether this becomes a formal sub-scope of pCD-V or stays a separate API effort.
 
 **Why:** long-term platform unification effort spanning multiple quarters, directly shaped by Yu Han's architecture decisions.
 

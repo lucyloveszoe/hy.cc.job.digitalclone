@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: b57dbea7-e0ff-4ed2-a55d-4625560a26cf
-  modified: 2026-08-24T06:30:47.226Z
+  modified: 2026-08-25T20:30:05.663Z
 ---
 
 Ongoing architecture POC for the GD-Breakdown "Detail" style DB / "Flex-Plot Prototype," evaluating Apache Iceberg + Trino + S3 vs. Snowflake + S3 as the storage backbone. Target milestone noted as 3/27/2026.
@@ -29,6 +29,10 @@ Yu Han has flagged this internally as a likely cornerstone for integrating futur
 **Related: FCM Analyzer**. FCM Analyzer V1.1.0 (SNP worst-case analysis) officially released 04/28/2026 — the SNP Worst-Case study (Chao/Jiapeng) slipped 3 weeks (04/07→04/28/2026) after an initial stakeholder buy-off failed, adding a new must-do OR-condition filter requirement. Tracked here because Yu Han ties FCM Analyzer to the same future FCM ATE data integration this GD-Breakdown work is meant to support.
 
 **Origin traced to Sep-Nov 2025**: this began as Ken's "Flex-Plot" proposal — using GE to break each Clotho ATE result file down into a fixed-column sparse CSV square, appended to an interim DB for flexible ad-hoc search/comparison (an alternative/complement to Spotfire and PADMA) — first drafted as an SOW/SRS on 10/02/2025. A kickoff session with SJ NPI (Steven's team) and JJ's team (the PADMA owner) on 11/23/2025 led to agreement (11/25/2025) to build a GD-Breakdown-DB-based POC, owned jointly by SW's Ken and SJ NPI's Kevin, with a **demo targeted for 01/30/2026** — the goal being to prove the GD-Breakdown DB format can support the needed data access within acceptable latency/cost. This is the direct precursor to the Iceberg/Trino-vs-Snowflake architecture POC and the 03/17/2026 Trial Release described above. **Ownership split clarified (12/02/2025)**: Chao leads the DB design specifically, while Ken remains overall POC owner; pending a clarified DB design proposal from Chao.
+
+**Golden-Dictionary NXG-WUDAS Ecosystem (KinLum/Chao) — same Snowflake decision, later checkpoints (ww34, 08/25/2026)**: this is the still-open, umbrella-named continuation of the GD-Breakdown Snowflake work above (KinLum/Chao evaluating the full ~14B-row/120-column Snowflake table, having already dropped Parquet/External Table in favor of direct CSV load). Two additional checkpoints beyond what's captured above: **04/07/2026** Chao shared a draft SOW for internal review; **05/11/2026** Kin Lum and Chao updated the Q2'FY26 QBR to clarify project scope. No committed target date as of ww34.
+
+**NXG WUDAS - CAQ (Custom Analysis Query) (KinLum/Chao, Hold)** — a related but distinct proposal in the same NXG-WUDAS ecosystem: extend WUDAS's SQL query grammar (no new API signatures needed) to support "Action Request" and "Compute data aggregation" style queries, not just plain data lookup. Goals: horizontal data access by 2DID or MFG_ID+OTP_MODULE_ID; product-tag/device-unique-ID lookup via Snowflake's unstructured-data query support; time-unconstrained queries and JSON-field extraction; better usage tracking via a Streamline Usage Report. Motivation: as data volume grows, current zDB infra is technically fully accessible but exceeds what end-user processing/visualization tools (e.g. Spotfire) can handle, forcing users to compromise on data volume for manageability. Two illustrative use cases documented: (1) flagging test parameters where a given 2DID falls outside the 0.5th-99.5th percentile of 3 months' reference data (per product tag); (2) a scalable BE-module data-query pattern standardizing handler-arm/PCB/wafer-OTP info as queryable system columns. Held, no target date — check for a decision before assuming this is active.
 
 **Why:** the storage-architecture choice made here is expected to shape a downstream, higher-stakes integration (FCM ATE data into TUDAS).
 

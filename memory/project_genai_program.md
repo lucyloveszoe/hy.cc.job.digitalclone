@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: b57dbea7-e0ff-4ed2-a55d-4625560a26cf
-  modified: 2026-08-24T06:30:53.541Z
+  modified: 2026-08-25T20:30:26.262Z
 ---
 
 Durable GenAI governance policy at WSD/Broadcom GTO, consistent across all weekly reports ww01–ww10 (2026) — relevant to Yu Han's Broadcom WSD AI Champion role:
@@ -155,6 +155,18 @@ WSD's own GenAI agents (built on Vectara) are tracked against an accuracy bar: a
 **GCA enterprise licensing frozen mid-negotiation (07/09/2025)**: GTO paused issuing new GCA enterprise licenses while it renegotiates terms with Google — a temporary freeze, not a policy reversal. Also reaffirmed this week: cloud LLM use remains restricted to non-critical IP only, and all AI use still requires approval — both consistent with (not new relative to) the standing policy summarized at the top of this file.
 
 **Tabnine POC plan (05/27/2025)**: KinLum/Tingyu/YK/Choo-Yau/Ken plan to run WSD's Clotho and Wafer code repos through Tabnine to build a customized/fine-tuned model; Yu Han is setting up the Tabnine Sync for this. Separately, Yu Han consolidated all of Broadcom's divisions' shared Private-AI-Agent use cases into one master tracking sheet.
+
+**ww34 snapshot (08/25/2026) — Claude Code budget/usage**: WSD requested a further CAP increase from **$100K to $130K/month**, on top of the $286K-for-rest-of-FY26 / ~$2.1M-FY27 forward estimate already tracked above. 416 members have completed CC training; active users grew June 191 → July 268 → July (revised) 305, with ~$62.5K spent so far in that window. The "High Token Consumption Group" (HTCG) now covers 13 teams / 114 engineers, $52.9K booked plus 2 teams pending.
+
+**New GTO restriction: no Claude CLI on shared/RDP infrastructure (ww34)**: GTO clarified Claude CLI must **not** be installed on any "Shared" device, and explicitly must not be installed on WSD's Windows RDP servers (rdgwinsrv03/04/05.ams.broadcom.net) — anyone who already installed it there must remove it ASAP. Treat this as a hard policy line distinct from the general per-user Claude Code approval.
+
+**Aug 2026 GTO GenAI Champion monthly update**: beyond the IP/Source-Code delegation-to-BUs point already tracked above, GTO announced (1) a **Token Optimization** initiative — Broadcom-wide token tracking/gateways are rolling out, and WSD's high-consumption users need to find ways to reduce usage; Yu Han and John Kim are joining Broadcom's steering committee for this; (2) **CAP API access** — GTO/A-Corp will start offering programmatic API access to the CAP budget system (not just the current rigid portal), which WSD hopes will streamline its own token-budget management. WSD's GenAI profile as of this update: 456 members on the WSD-GENAI-GENERIC PDL (up from ~150-166 in early 2026).
+
+**Vertex/Gemini use-case requests advancing (ww34)**: Brian's **"Vertex Inference Expansion"** request — Mike approved the ROI (direct technician-time cost savings plus the value of shortened fab-tool downtime/higher uptime on an expensive tool fleet) — now in OneTrust review. Related: **INFICON FabTime** — deployed entirely on-premise except for calls to GCP Vertex AI (Gemini model + Vertex Text Embeddings) — pending GTO confirmation before it can be submitted to OneTrust. A separate **FtC "Use of Gemini for Data Extraction"** case is also being tracked. Scott's **"Pure query Vector DB"** need is in clarification with Vectara over corpus concurrency limits.
+
+**Secure Vectara/GTO Production Environment (KinLum/Brian/Foo-Kit/Tingyu, target 10/06/2026)**: building on the EvalKit auto-grader work already tracked above, Brian's WSD "EvalKit" reusable auto-grading mechanism is being integrated with MARA and positioned for enterprise-wide reuse; Brian is aligning with Vectara on a guideline document (08/18/2026), and as of 08/25/2026 Brian's own verify pipeline is complete and ready for Vectara integration testing, with WSD syncing with Vectara/GTO on Kin Lum/Tingyu's workflow-integration proposal.
+
+**Cursor sunset — confirmed applied (08/25/2026)**: the 120→83 seat reduction (already tracked above as enforced gradually from 07/07/2026) was formally applied this week, and Cursor's Anthropic-model removal (already dated 08/04/2026 above) was reconfirmed as in effect — Cursor now runs non-Anthropic models only, ahead of its full sunset in favor of Claude Code.
 
 **Why this matters:** this is the concrete, evolving policy/tooling landscape Yu Han operates and represents WSD in — useful for grounding any future AI-adoption advice to him.
 

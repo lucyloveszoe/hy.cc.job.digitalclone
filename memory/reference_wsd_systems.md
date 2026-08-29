@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: b57dbea7-e0ff-4ed2-a55d-4625560a26cf
-  modified: 2026-08-19T22:18:06.881Z
+  modified: 2026-08-25T20:30:31.330Z
 ---
 
 - **JIRA**: WSD SW team active pool with status & backlog — jira.broadcom.net PortfolioPlanView (id=59, sid=61, vid=164).
@@ -14,7 +14,7 @@ metadata:
 - **WSD Atropos portal**: MLOps portal, accessed via Broadcom OKTA.
 - **GenAI KB articles** (Broadcom GTO knowledge base): Usage/Policy (KB0023277), OneTrust Questionnaire (KB0023618), Cursor Onboarding (KB0023366), Cursor Pricing/FAQ (KB0023715).
 - **Cursor tracking sheets**: license control sheet, "Best Practices" sheet, "Interested Case Tracking" sheet.
-- **WSD-GENAI-GENERIC**: Google Group / PDL for WSD's GenAI program (~150-166 members as of early 2026).
+- **WSD-GENAI-GENERIC**: Google Group / PDL for WSD's GenAI program (~150-166 members early 2026, grown to 456 members by ww34/Aug 2026). Chat: "WSD ClaudeCode/Cursor/Gemini User Group" Google Chat space.
 - **SW Team Projects Site**: `https://atropos.s3.ap-southeast-1.amazonaws.com/wsd.sw/wsd-sw-projects.html` — lists all SW team projects since 2010, tag-based, rebuilt for UX in ww17 (Apr 2026).
 - **2026 weekly status reports (WWL) archive**: stored in a Box folder (link given in the reports themselves) — the canonical archive of the same reports this project's `/log` skill processes.
 - **`WSD.AspNetCoreReact`**: GitHub template repo for the ASP.NET Core (.NET 10) + React.js portal-rebuild standard — see [[project-ai-frontend-rebuild]].

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: b57dbea7-e0ff-4ed2-a55d-4625560a26cf
-  modified: 2026-08-24T06:26:53.382Z
+  modified: 2026-08-25T20:29:42.885Z
 ---
 
 Yu Han initiated the "WSD/AWS Resiliency Improvement" effort after an AWS us-east-1 outage, because WSD's major workloads run in an older-generation SG (Singapore) AWS region. This has been an active, recurring theme across every weekly status report from ww01 (Jan 2026) through ww10 (Mar 2026).
@@ -97,3 +97,10 @@ Scope: a multi-region resiliency review spanning S3 (multi-region), Route53, Aur
 - Windows Server 2016→2022 patching on SGN servers caused intermittent MySQL connection failures (suspected TLS/SSL), unresolved as of ww31/32; GTO temporarily pulled one server out of the hardening security GPO as a workaround.
 - A Snowflake "Adaptive Compute" evaluation is underway (potential ~30% cost cut), but the Type I→Type II warehouse migration path is not a simple clone and technical gaps are expected (sync held 08/03/2026, unresolved).
 - Prisma Cloud scanning (the tool WSD is leaning on now that the AWS Security Agent eval is closed) had 427 unresolved critical/high cloud security misconfigurations flagged as of ww32 — an open remediation backlog, not yet tracked to completion.
+
+**ww34 update (08/25/2026) on the risks above**:
+- **GTO Prisma remediation formally requested** (08/06/2026, GTO contact anjan.konedena@broadcom.com): two concrete to-dos — (1) install the Prisma Defender Agent on ECS clusters that are missing it; (2) work through the 427 flagged critical/high cloud misconfigurations. SW team's internal review (08/25/2026): Kin Lum confirmed Aurora DB already restricts inbound access to specific IPs via security groups and is requesting a GTO exception for that finding (pending confirmation); Kin Lum is also checking/updating owned EC2 instances to IMDSv2 (in progress).
+- **Service Users IAM Rotation 26q4** (one of the Prisma P2 issues): Ken applied the rotation 08/10/2026; the original 08/25/2026 deadline to update IAM access keys (after which old keys get deleted) was extended to **09/14/2026** per Kin Lum's request.
+- **SGN Windows Server 2016→2022 upgrade**: all 5 servers now completed (gai.wsd.sgn, wsdsgsvc01/02/03, backup server). The intermittent MySQL connection issue persists (suspected TLS/SSL network-security root cause) despite retry logic and a library swap (MySql.Data → MySqlConnector) on PPYCC/PRDA consoles, plus a temporary GPO exclusion for one server — none of which fixed it. As of 08/24-08/25/2026, testing has moved to EC2: the PRDA console shows **no issue** running on an EC2 Windows Server 2022 instance (10.202.128.17, upsized from c5.large to c5.4xlarge to test spec requirements); PPYCC console testing on EC2 is in progress next.
+- **Snowflake Adaptive Compute**: 08/03/2026 sync with Snowflake confirmed the Type I→Type II warehouse migration is not a simple clone (real technical gaps expected); as of 08/18/2026 still pending SW team bandwidth to weigh pros/cons before enabling.
+- **AWS Savings Plan renewal** (Kin Lum, in progress): purchase planned for 09/07 and 09/10/2026.

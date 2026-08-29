@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: b57dbea7-e0ff-4ed2-a55d-4625560a26cf
-  modified: 2026-08-24T06:10:09.307Z
+  modified: 2026-08-25T20:30:39.636Z
 ---
 
 Recurring working principles Yu Han applies when reviewing his team's technical proposals, drawn from weekly status reports (ww01–ww10, 2026):
@@ -32,7 +32,7 @@ Recurring working principles Yu Han applies when reviewing his team's technical 
 
 - **Push back on over-engineered proposals in favor of production-friendly solutions** (08/2024, Tester-to-Tester Communication proposal): when YK's team proposed a generic, extensible "OEE dynamic tester grouping" solution (Kafka/MQTT/Redis-based) to solve a narrow Clotho1+Clotho2 communication need, Yu Han judged the proposal over-complicated and asked the team to trade off toward a simpler, more production-friendly but still reliable solution, holding further discussion until after internal cross-team alignment. Why: guards against solving a narrow problem with unnecessarily broad/complex infrastructure. How to apply: when a proposal introduces significant new infrastructure (a message broker, a new service) for a narrowly-scoped problem, check whether a simpler production-friendly option was considered first.
 
-- **Formal, staged security-scan discipline over ad-hoc re-scanning** (Mythos program, ww29 onward): Round 1 full scan → owner fixes → Round 2 full scan → owner review/fix → Round 3 selected scan → done. Going forward, all new releases/upgrades go through a Mythos scan by default (skip-list reserved for explicitly flagged legacy projects). Why: replaces uncontrolled, repeated re-scanning with a predictable remediation cycle. See [[project-mythos-security-scanning]].
+- **Formal, staged security-scan discipline over ad-hoc re-scanning** (Mythos program, ww29 onward): Round 1 full scan → owner fixes → Round 2 full scan → owner review/fix → Round 3 selected scan → done. Going forward, all new releases/upgrades go through a Mythos scan by default (skip-list reserved for explicitly flagged legacy projects). Why: replaces uncontrolled, repeated re-scanning with a predictable remediation cycle. How to apply: within each round, use Ken's specific delta-scan prompting pattern — scan finds set "E", fix it, then re-scan should be prompted to find only "E+x" (the incremental new findings against the known baseline), not treated as an uncontrolled fresh "A then B+y" re-scan from scratch each time — this keeps remediation cycles converging instead of re-litigating already-accepted findings. See [[project-mythos-security-scanning]].
 
 - **One platform-wide auth/token mechanism, not one per requesting client** (02/04/2025, IDI OKTA integration): when the DA team asked IDI to adopt their own custom short-lived "DA-Token" instead of WSD's standard ID.Pass JWT, Yu Han declined — ID.Pass already covered DA's actual need (permission payload, trivial client change), and as the platform/API provider WSD should support one token mechanism across all apps/services rather than a bespoke one per client. Why: every client-specific exception multiplies the auth surface WSD has to maintain. How to apply: when a team asks WSD to support their own custom auth/token scheme, check whether the existing standard mechanism (ID.Pass / dual-JWT, see [[project-okta-sso-jwt-architecture]]) already covers the need before agreeing to a one-off.
 

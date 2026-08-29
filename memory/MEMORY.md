@@ -1,7 +1,9 @@
 - [Role & Team](user_role_team.md) — WSD SW team manager, reports to KP, roster, GenAI split, Mythos/Git/Maverick leadership
+- [Digital Clone Trust Checkpoints](project_digital_clone_trust_checkpoints.md) — A→B trigger log; checkpoint 1/2-3 clean on 2026-08-25
+- [Draft-WWL Pilot Decisions](project_draft_wwl_pilot.md) — Proposal B v1 scope/format/input-mechanism choices + reasoning, built 2026-08-28
 - [Engineering Principles](feedback_engineering_principles.md) — no-reinvent-wheels, side-by-side testing, 80/20 scoping, AI cost-routing, urgent-request vetting, scan discipline
 - [AWS Resiliency Initiative](project_aws_resiliency.md) — multi-region review; pen-test eval closed (AWS-side bug); Aurora/Snowflake/Prisma risks
-- [GenAI Program](project_genai_program.md) — Claude Code/Cursor governance, $100K/mo budget, Vectara agent quality, Cursor sunset
+- [GenAI Program](project_genai_program.md) — Claude Code/Cursor governance, budget $100K→$130K request, Vectara agent quality, Cursor sunset applied
 - [AI Front-End Rebuild](project_ai_frontend_rebuild.md) — DevCraft lapse → ASP.NET Core+React rebuild, all portals complete
 - [Mythos Security Scanning](project_mythos_security_scanning.md) — GTO-mandated repo scan program, SW + non-SW tracks
 - [Git Repo Standardization](project_git_repo_standardization.md) — GitHub ownership/naming cleanup triggered by Mythos
@@ -9,7 +11,7 @@
 - [Certificate Lifecycle (Keyfactor)](project_certificate_lifecycle_keyfactor.md) — cert validity shortening 200→100→47 days by 2029
 - [zDB Large-File Risk](project_zdb_large_file_risk.md) — hard CAP + NPI/Prod split proposal, still pending PE
 - [TUDAS OOM → SQLite](project_tudas_oom_sqlite.md) — memory-spike fix, implementation in progress
-- [pCD-V/Clotho V7](project_pcd_clotho_v7.md) — wafer migration, prod target now 12/04/2026, parallel V6 sub-migration
+- [pCD-V/Clotho V7](project_pcd_clotho_v7.md) — wafer migration, prod target 12/04/2026; V7.0 wafer-only/V7.1 module-catchup/V7.2 optional/V8.0 unified roadmap set
 - [GD-Breakdown/Flex-Plot](project_gd_breakdown_flexplot.md) — in production, FCM Analyzer V1.1.0 tie-in
 - [NXG Pipeline & Raptor](project_nxg_pipeline_and_raptor.md) — Raptor Phase 1 complete, Baku rollout started
 - [GCP-API Umbrella](project_gcp_api_umbrella.md) — Yu Han-owned GCP gateway project, completed 05/26/2026
@@ -30,3 +32,11 @@
 - [SG DC → TK DC Migration](project_sgdc_to_tkdc_migration.md) — GTO mandate dropped 10/14/2025, WSD Windows servers/CIFS storage stay in Singapore
 - [Cloud SFTP Phase 2 / Wafer Planning](project_cloud_sftp_phase2_wafer_planning.md) — automating Yellow/Red Internal Wafer Planning data types, FormFactor onboarded 10/21/2025
 - [TDD Type-29 AOP Parsing](project_tdd_type29_aop_parsing.md) — new zDB Type 29 to fix manual annual AOP test-time budgeting, target end-Jan 2026
+- [Ken's Cloud-Native Scheduler Proposal](project_ken_cloud_native_scheduler_proposal.md) — team review of a proposed cloud-native scheduler, checked against schema-driven migration for conflict
+- [AI-Friendly Schema-Driven Migration](project_ai_friendly_schema_driven_migration.md) — Kin Lum's NXG framework unifying Feeder/Transfer/CLEADA-stitcher pipelines, target 10/20/2026 (Feeder)
+- [Sawnics AVI/Metapulse Collection](project_sawnics_avi_metapulse_collection.md) — new zDB Types 61/62, first production vehicle for schema-driven feeder migration, target 09/11/2026
+- [Module Testing 2DID Aggregation](project_module_testing_2did_aggregation.md) — proposal to switch C-Aggregation from SubLot- to 2DID-based, pending PE clarification
+- [FCM Analyzer Program](project_fcm_analyzer_program.md) — Proto-2 charting, TAP/ATE expansion, Telecaster-II automation, and FCM Analyzer's own sunset plan
+- [WSD AI Efficiency Self-Eval](project_wsd_ai_efficiency_selfeval.md) — 12-metric checklist + Google Form survey, ICB-weighted, files mid-relocation as of 2026-08-25
+- [2021 Partial Review (ww40-52, missing ww43/ww01-39)](project_2021_partial_review.md) — WUDAS fix, AWS credential wave, pCD-III/Clotho V3.2.0 shipped, Spotfire V11, AWS budget/RI cycle, Mongo slow-down, CI/CD & Clotho-binary seeds
+- [2022 Partial Review (ww01-51, missing ww52)](project_2022_partial_review.md) — ODBC/Aurora/ASEKH/Clotho V3.3.0.1/CI-CD I&II/RTDC/NXG all 3 phases closed, AWS MLOps pilot→internal Sagemaker build, Cycode scan→mandatory security policy, AWS SHI→BRCM billing transfer nearly closed, Clotho V4.0 seeded
