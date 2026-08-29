@@ -12,10 +12,14 @@ external actions, ever.
 - **Proposal A — Passive Shadow (current phase, in progress)**: pure memory-building.
   Yu Han drops files into `inbox/`, runs `/log` manually, the skill files structured
   memory and archives the source. Zero autonomous actions of any kind.
-- **Proposal B — Scheduled Draft Agent (next phase, not started)**: once memory proves
-  reliable (see trigger below), pick ONE narrow recurring task Yu Han already does by
-  hand (e.g. weekly status digest, first-pass doc review) and produce draft-only output
-  to an outbox. Never sends, publishes, or merges anything itself.
+- **Proposal B — Scheduled Draft Agent (first pilot task built 2026-08-28)**: once memory
+  proves reliable (see trigger below), pick ONE narrow recurring task Yu Han already does
+  by hand (e.g. weekly status digest, first-pass doc review) and produce draft-only output
+  to an outbox. Never sends, publishes, or merges anything itself. First pilot: `/draft-wwl`
+  (see below) — drafts only the "In Progress" carry-forward section of the weekly WWL
+  report, deliberately the narrowest usable slice. Built ahead of the full 2-3-clean-
+  checkpoint trigger (only checkpoint 1 was logged clean as of this build) at Yu Han's
+  explicit direction — an intentional exception, not a change to the trigger rule itself.
 - **Proposal C — Scoped Task Agents with Approval Gates (later)**: several small,
   single-purpose agents for specific recurring duties, each with an explicit tool
   allowlist and a mandatory human-approval step before anything externally visible fires.
@@ -62,6 +66,16 @@ one draft-only task.
   ambiguous/sensitive content (flags it instead).
 - Memory folder for this project:
   `C:\Users\hany\.claude\projects\C--Temp-AllCode-Claude-hy-cc-job-digitalclone\memory\`
+- `wwl_notes/` — drop zone for rough weekly notes (any format) feeding `/draft-wwl`.
+- `wwl_notes/archive/` — processed notes land here after a successful draft. Nothing is
+  ever deleted, only moved.
+- `wwl_outbox/` — dated draft-only markdown output from `/draft-wwl`. Yu Han reviews/edits
+  before using; nothing here is ever sent, posted, or merged automatically.
+- `.claude/skills/draft-wwl/SKILL.md` — Proposal B's first pilot skill. Manual trigger only.
+  Reads `wwl_notes/` plus the memory folder's **active** (non-archival) project memories,
+  drafts only the "In Progress" carry-forward list, flags unmapped notes as possible new
+  items instead of guessing, and never drafts the Complete/New/Production-Support/IT-Support
+  sections — those stay fully manual.
 
 ## Layout decision: flat, not nested
 
@@ -82,13 +96,20 @@ pattern. Not built yet.
 3. **Explicit audit**: Yu Han periodically asks "summarize what you currently understand
    about my role and priorities" to surface and correct the accumulated profile before
    errors compound. This is also the A → B trust-threshold check (see above).
+4. **Per-run** (Proposal B): `/draft-wwl`'s own summary of threads updated vs. carried
+   forward, plus anything flagged as a possible new item or needing input — same
+   transparency pattern as `/log`, applied to draft output instead of memory writes.
 
 ## Current status
 
-- Folder structure and `/log` skill: built, not yet used with real data.
-- Memory folder: empty, no checkpoints run yet.
-- Next action: Yu Han drops a real note/file into `inbox/`, runs `/log`, reviews filing
-  quality before making this a habit.
+- `/log` / Proposal A: in active use. Memory folder covers Yu Han's role/team, working
+  principles, and ~20 active initiatives, plus a growing weekly-status archive (2021
+  partial, 2022 nearly complete through ww51). Trust checkpoints: 1 of the informal 2-3
+  needed logged clean (2026-08-25); see `project_digital_clone_trust_checkpoints.md`.
+- `/draft-wwl` / Proposal B: skill and folders (`wwl_notes/`, `wwl_outbox/`) built
+  2026-08-28, not yet run with real data.
+- Next action: Yu Han drops this week's rough notes into `wwl_notes/`, runs `/draft-wwl`,
+  reviews the draft quality before making it a habit.
 
 ## Guardrails (non-negotiable, carry into every future phase)
 
@@ -96,5 +117,6 @@ pattern. Not built yet.
 - Never fabricate memory content — file only what a source explicitly states.
 - Never take any externally-visible action (send, post, publish, merge) without an
   explicit human-approval step, no matter how much trust has accumulated.
-- Never write outside `inbox/`, `inbox/archive/`, and the project's memory folder.
+- Never write outside `inbox/`, `inbox/archive/`, `wwl_notes/`, `wwl_notes/archive/`,
+  `wwl_outbox/`, and the project's memory folder.
 - When ambiguous or sensitive, stop and ask — do not guess.
