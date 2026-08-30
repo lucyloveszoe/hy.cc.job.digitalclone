@@ -2,6 +2,7 @@
 - [Digital Clone Trust Checkpoints](project_digital_clone_trust_checkpoints.md) — A→B trigger log; checkpoint 1/2-3 clean on 2026-08-25
 - [Draft-WWL Pilot Decisions](project_draft_wwl_pilot.md) — Proposal B v1 scope/format/input-mechanism choices + reasoning, built 2026-08-28
 - [Engineering Principles](feedback_engineering_principles.md) — no-reinvent-wheels, side-by-side testing, 80/20 scoping, AI cost-routing, urgent-request vetting, scan discipline
+- [Slide Deck Style Preservation](feedback_slide_deck_style_preservation.md) — edit hand-restyled artifacts in place, never regenerate from the original script
 - [AWS Resiliency Initiative](project_aws_resiliency.md) — multi-region review; pen-test eval closed (AWS-side bug); Aurora/Snowflake/Prisma risks
 - [GenAI Program](project_genai_program.md) — Claude Code/Cursor governance, budget $100K→$130K request, Vectara agent quality, Cursor sunset applied
 - [AI Front-End Rebuild](project_ai_frontend_rebuild.md) — DevCraft lapse → ASP.NET Core+React rebuild, all portals complete
