@@ -107,9 +107,11 @@ not fine-tuning.**
   API-consolidation idea below for closing that gap.
 
 **Concrete next actions (2026-08-29)**
-- **Build a 100+ example query corpus** mapped to real human needs, sourced from
-  actual historical support-request tickets (not hypothetical questions) — start
-  immediately, zero dependencies (no GTO approval, no platform work needed). Does
+- **Build a 1000+ example query corpus** mapped to real human needs, sourced from
+  real-world queries (updated target 2026-08-30, up from the original 100+ — scope of
+  "real-world" vs. "historical support-request tickets only" not yet confirmed with
+  Yu Han, see flag below) — start immediately, zero dependencies (no GTO approval, no
+  platform work needed). Does
   triple duty: it's the Option A template library, it's the golden-query regression
   set Option C will eventually need, and it's the training corpus fine-tuning would
   need if that path is ever revisited later.
@@ -203,6 +205,49 @@ sandbox trial-run for that domain, then repeat for the next. Same narrow-first
 phasing already used elsewhere in this project (the digital-clone Proposal A→B→C
 pattern), just applied at the domain level instead of the whole-system level.
 
+## Long-term plan: Agent-native direct consumption of the Asset Menu (2026-08-30)
+
+**Why this isn't v1**: current GTO policy permits only **on-prem Vectara RAG Agentic
+deployment** for internal-facing agents (see the internal-vs-external routing rule
+above), and the approved on-prem model roster (gpt-oss-120b, gemma-4-31b, etc.) sits
+well below Claude/ChatGPT-class frontier accuracy on the reasoning/tool-selection/
+argument-extraction tasks this design leans on. That gap is exactly why Option A
+deliberately keeps the LLM's job narrow — RAG-match to one template, extract a few
+parameters — instead of trusting it to reason freely across multiple assets or chain
+calls together. Widening model autonomy today, on today's approved models, would raise
+correctness risk without the accuracy to back it up.
+
+**The long-term shift**: once that gap closes — either (a) GTO approves a
+higher-accuracy model for this narrowly-scoped, sandboxed use case, revisiting the
+internal-vs-external routing rule, or (b) on-prem models close the gap themselves —
+evolve the Asset Menu from "matched by a constrained NL-classifier" into "consumed
+directly by a tool-using Agent." Register every catalogued template, API, and wrapped
+library as a callable tool: the Asset Menu's shared metadata schema (name, capability
+description, inputs/outputs, owner, callable-or-needs-wrapper flag) already doubles as
+the tool schema an agent would need. The Agent then plans and chains its own tool calls
+instead of being limited to single best-match lookups, unlocking compositional requests
+(e.g. "compare X across two zDB types") that Option A's one-shot matching can't serve
+today.
+
+**What must not change**: the sandbox trial-run + human-confirmation gate (see Key
+Safety Upgrade) stays mandatory no matter how capable the model gets — a better model
+changes *what* the Agent plans, not whether a human sees real sample rows before
+trusting the number. This makes the long-term plan additive to Option A/B, not a
+replacement of the safety architecture.
+
+**Dependencies / triggers** (none met yet — tracked, not scheduled):
+- GTO policy movement on internal-vs-external routing, or the on-prem roster closing
+  the accuracy gap — whichever comes first.
+- Maverick maturing past its current Die Inventory Agent pilot to support this kind of
+  tool-chaining execution — mirrors the "Vectara does matching, Maverick does
+  execution" split already sketched under Option C.
+- A confirmed-query corpus large enough (from Option A/B usage) to evaluate a more
+  autonomous agent against a regression set before granting it wider tool access.
+
+Not a v1/v2 dependency — noted now so the Asset Menu's shared metadata schema is
+designed tool-call-ready from the start, even though nothing acts on it until the
+model/policy gap actually closes.
+
 ## Recommendation
 
 Start with **Option A**, with the asset menu (above) as how its template library
@@ -233,8 +278,13 @@ capability gap closing.
   (OneTrust #27580) — it hit the same "RAG platform has no SQL/DB-agent capability"
   wall that Query Copilot would need to clear for Option B/C. His answer tells us
   whether that platform gap has since been solved, or whether it's still open.
-- **Concrete next action 2**: start building the 100+ example query corpus (see
+- **Concrete next action 2**: start building the 1000+ example query corpus (see
   above) — no dependencies, can start now.
+- **Flag for Yu Han (2026-08-30)**: the PPT's corpus description was manually widened
+  from "real support-ticket examples" to "real world queries" — please confirm whether
+  this means sourcing goes beyond historical support-request tickets (e.g. live query
+  logs, other usage data) so the .md's sourcing description can be made precise rather
+  than left at "real-world queries."
 - **Concrete next action 3**: design the Asset Menu's shared metadata schema
   (library/API name, capability description, inputs/outputs, owning domain/team/
   repo, callable-or-needs-wrapper flag) and pick the first domain to catalog and
@@ -245,3 +295,6 @@ capability gap closing.
   internal-vs-external routing rule (on-prem-only inference; no cloud LLM).
 - No v1 component sketch / build-size estimate done yet (offered, not yet requested).
 - No decision yet on which option to actually pursue.
+- Long-term Agent-native Asset Menu consumption (see dedicated section above) — gated
+  on GTO policy/on-prem model accuracy closing the gap to Claude/ChatGPT-class models;
+  not scheduled, tracked only.
