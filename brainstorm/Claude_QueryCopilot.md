@@ -2,6 +2,33 @@
 
 Status: brainstorming, no decision made yet. Continue this discussion from here next time.
 
+## PPT polish pass (2026-08-30)
+
+Edited `QueryCopilot_Highlight.pptx` in place (per the deck's established hand-restyled
+palette — charcoal/cyan/deep-blue/teal, see digital-clone memory
+`feedback_slide_deck_style_preservation.md` — not regenerated). Changes:
+- Fixed two typos: "Tool-Chaing" → "Maverick" (see below), "Investory" → "Inventory".
+- Fixed a title punctuation inconsistency: slide 1 said "HOW IT WORKS —V1" (no space),
+  slide 2 said "HOW IT WORKS — V2" (space) — standardized to match.
+- Fixed a status-tense mismatch: the Asset Menu stat said "~20–30 entries **today**,"
+  but the menu itself is still an unbuilt next action — changed to "~20–30 entries
+  **targeted for v1**."
+- Polished the awkward "At Pre-AI age..." subtitle sentence for grammar (meaning
+  unchanged).
+- **Corrected an ungrounded claim** on slide 2's V2 dependency card. It read "GTO allow
+  high performance custom AI Tools Chaining also Agentic API Protocol is mature" — this
+  didn't match any documented trigger; the actual documented v2 dependency (see "Long-
+  term plan" section below) is Maverick maturing past its current Die Inventory Agent
+  pilot. Changed the card header "Tool-Chaing" → "Maverick" and its body to "Maverick's
+  tool-chaining execution matures past today's Die Inventory Agent pilot," matching the
+  three dependency cards' existing pattern (each names the gating entity: GTO Policy /
+  Maverick / Query Corpus).
+- Reworded the corpus-sourcing bullet/stat to consistently say "real-world queries"
+  (was inconsistent with "real support tickets" elsewhere) per the sourcing-scope
+  decision below.
+- Everything else checked against this .md and found already accurate and internally
+  consistent — no other content changes made.
+
 ## Naming note
 
 Working name "Query Copilot" used deliberately instead of "NXG" — "NXG" is already
@@ -108,9 +135,10 @@ not fine-tuning.**
 
 **Concrete next actions (2026-08-29)**
 - **Build a 1000+ example query corpus** mapped to real human needs, sourced from
-  real-world queries (updated target 2026-08-30, up from the original 100+ — scope of
-  "real-world" vs. "historical support-request tickets only" not yet confirmed with
-  Yu Han, see flag below) — start immediately, zero dependencies (no GTO approval, no
+  real-world queries (updated target 2026-08-30, up from the original 100+). **Confirmed
+  with Yu Han (2026-08-30): sourcing is deliberately broader than historical
+  support-request tickets** — it also includes live query logs and other real usage
+  data, not tickets alone. Start immediately, zero dependencies (no GTO approval, no
   platform work needed). Does
   triple duty: it's the Option A template library, it's the golden-query regression
   set Option C will eventually need, and it's the training corpus fine-tuning would
@@ -278,13 +306,10 @@ capability gap closing.
   (OneTrust #27580) — it hit the same "RAG platform has no SQL/DB-agent capability"
   wall that Query Copilot would need to clear for Option B/C. His answer tells us
   whether that platform gap has since been solved, or whether it's still open.
-- **Concrete next action 2**: start building the 1000+ example query corpus (see
-  above) — no dependencies, can start now.
-- **Flag for Yu Han (2026-08-30)**: the PPT's corpus description was manually widened
-  from "real support-ticket examples" to "real world queries" — please confirm whether
-  this means sourcing goes beyond historical support-request tickets (e.g. live query
-  logs, other usage data) so the .md's sourcing description can be made precise rather
-  than left at "real-world queries."
+- **Concrete next action 2**: start building the 1000+ example query corpus, sourced
+  from real-world queries — confirmed 2026-08-30 to include live query logs/other
+  usage data, not just historical support tickets (see above) — no dependencies, can
+  start now.
 - **Concrete next action 3**: design the Asset Menu's shared metadata schema
   (library/API name, capability description, inputs/outputs, owning domain/team/
   repo, callable-or-needs-wrapper flag) and pick the first domain to catalog and
