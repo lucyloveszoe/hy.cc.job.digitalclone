@@ -1,0 +1,31 @@
+### be-module
+| Table | Query count |
+|---|---:|
+| cstatbin | 5,000 |
+| csummary | 5,000 |
+| lot | 5,000 |
+| ncclothoheader | 5,000 |
+| ncdetail | 5,000 |
+| ncdetailslim | 5,000 |
+| nclot | 5,000 |
+| ncstatbin | 5,000 |
+| ncsummary | 5,000 |
+| topparameter | 5,000 |
+| ncinstrumentinfo | 4,556 |
+| cdetailslim | 2,364 |
+| cdetail | 1,797 |
+
+### fbar-wafer
+| Table | Query count |
+|---|---:|
+| wafer | 5,000 |
+| waferdetail | 5,000 |
+| waferdetailslim | 5,000 |
+| waferparameta | 5,000 |
+| waferstatbin | 5,000 |
+| wafertrace | 5,000 |
+| wafertracexy | 5,000 |
+| wafertracezip | 5,000 |
+| waferheader | 660 |
+| waferh2tracezip | 569 |
+| waferh2tracexy | 123 |

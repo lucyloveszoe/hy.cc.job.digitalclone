@@ -1,325 +1,283 @@
-# Query Copilot (working name) — NL-to-SQL Data Request Assistant
+# WSD Data Access Co-Pilot — Project Design
 
-Status: brainstorming, no decision made yet. Continue this discussion from here next time.
+**Status:** Proposal — v1 detailed design | **Date:** 2026-09-05
 
-## PPT polish pass (2026-08-30)
+**Design provenance — read this first:** This is a **new, independent design**, not a fine-tune or refinement of any prior deck. Everything in this document is derived from the analysis conversation this design came out of — real query samples, real scale numbers, and reasoning worked through from first principles. An existing, unrelated slide deck (a separate "WSD Data SaaS Co-Pilot" brainstorm) was consulted for **visual style only** — its color palette, fonts, and slide layout grammar. None of its content, terminology, organizational claims, or assumed constraints were carried into this design. The two should not be treated as the same lineage. See **Appendix B** for the full clarification log, including the point where content from that other deck briefly leaked into an early draft of this one and was explicitly stripped back out.
 
-Edited `QueryCopilot_Highlight.pptx` in place (per the deck's established hand-restyled
-palette — charcoal/cyan/deep-blue/teal, see digital-clone memory
-`feedback_slide_deck_style_preservation.md` — not regenerated). Changes:
-- Fixed two typos: "Tool-Chaing" → "Maverick" (see below), "Investory" → "Inventory".
-- Fixed a title punctuation inconsistency: slide 1 said "HOW IT WORKS —V1" (no space),
-  slide 2 said "HOW IT WORKS — V2" (space) — standardized to match.
-- Fixed a status-tense mismatch: the Asset Menu stat said "~20–30 entries **today**,"
-  but the menu itself is still an unbuilt next action — changed to "~20–30 entries
-  **targeted for v1**."
-- Polished the awkward "At Pre-AI age..." subtitle sentence for grammar (meaning
-  unchanged).
-- **Corrected an ungrounded claim** on slide 2's V2 dependency card. It read "GTO allow
-  high performance custom AI Tools Chaining also Agentic API Protocol is mature" — this
-  didn't match any documented trigger; the actual documented v2 dependency (see "Long-
-  term plan" section below) is Maverick maturing past its current Die Inventory Agent
-  pilot. Changed the card header "Tool-Chaing" → "Maverick" and its body to "Maverick's
-  tool-chaining execution matures past today's Die Inventory Agent pilot," matching the
-  three dependency cards' existing pattern (each names the gating entity: GTO Policy /
-  Maverick / Query Corpus).
-- Reworded the corpus-sourcing bullet/stat to consistently say "real-world queries"
-  (was inconsistent with "real support tickets" elsewhere) per the sourcing-scope
-  decision below.
-- Everything else checked against this .md and found already accurate and internally
-  consistent — no other content changes made.
+---
 
-## Naming note
+## 1. Executive Summary
 
-Working name "Query Copilot" used deliberately instead of "NXG" — "NXG" is already
-in use for Kin Lum's unrelated schema-driven Feeder/Transfer/CLEADA-stitcher framework
-(see digital-clone memory: `project_ai_friendly_schema_driven_migration.md`). Reusing
-"NXG" for this would cause confusion in team comms. Rename if a better name comes up,
-but avoid "NXG."
+Domain experts currently pull data out of WSD's data systems — S3 (raw and processed files), a metadata database (filterable attributes + storage location, not the data itself), and a graph store (gDB, for process/lineage relationships) — by hand-writing SQL-style queries. Every request funnels through whoever on the team can write the query. That's the bottleneck — not the data platform, not the volume, not the systems themselves.
 
-## Problem being solved
+**WSD Data Access Co-Pilot** lets any stakeholder ask in plain English and get a governed, safe, auditable data pull — without generating free-form SQL and without fine-tuning a model on our schemas. It works because the underlying request patterns are **not novel**: 7 years of query history, once deduplicated, collapse into a small, finite catalog of known business intents (roughly 100–a few hundred, pending final dedup). The system's job is to *classify* a natural-language request into that catalog and *deterministically* execute it — not to reason its way to new SQL each time.
 
-Domain experts today raise data requests by hand-writing custom SQL against gDB, zDB,
-WUDAS, TUDAS, etc. (data ultimately backed by S3/DB). Slow, requires SQL literacy,
-funnels through whoever can write the SQL.
+**Value in one line:** turn a request that only 2–3 people can currently make into something anyone can ask in under a minute, with a mandatory safety gate — a capped sandbox run reviewed by the requestor — before anything touches production.
 
-## Proposed flow (as originally stated by Yu Han)
+**Definition of "v1" (used throughout this document):** the first shippable scope — a curated catalog covering the highest-frequency, already-known request patterns mined from the 7-year/40,000+ query history, not full coverage of every historical variant. A request outside that catalog falls back to human escalation (§4, step ⑧) rather than free-form generation. The exact catalog size is not yet fixed — see §8 for why, and what determines it.
 
-1. Requestor describes need in natural language.
-2. GenAI bot (RAG over the SW team KB — which documents zDB, WUDAS, TUDAS, TAP, gDB
-   schemas/semantics) converts the NL request into a candidate SQL query.
-3. Requestor reviews/confirms the SQL.
-4. System dynamically generates a UI for the requestor to fill in arguments (date
-   range, LotIDs, ProductTags, etc.).
-5. Confirmed SQL + collected arguments run against the data-mining/calculation
-   pipeline, returning results.
+---
 
-## Verdict: does the concept work?
+## 2. Current State vs Future State
 
-Yes structurally — this is a known, mature pattern (NL2SQL / text-to-SQL copilot),
-comparable to Snowflake Cortex Analyst, Databricks Genie, ThoughtSpot Sage. The
-human-confirms-before-execution step is the right safety gate in principle.
+### 2.1 Current State
 
-**Core risk identified**: the confirmation step assumes the requestor can read SQL
-well enough to catch a subtly wrong JOIN or aggregation. Most domain experts can't.
-A plausible-but-wrong query produces a confident wrong number that drives a real
-yield/cost decision — worse than today's slower-but-correct manual process. This is
-the risk any architecture choice must defend against, more than "can the LLM parse
-natural language" (it can).
+```
+Business stakeholder
+      │  (informal ask: Slack/email/hallway)
+      ▼
+Domain expert / SQL-literate engineer   ← the bottleneck
+      │
+      │  hand-writes a SQL-style query against the metadata DB, S3, and gDB
+      │  must personally know: table names, field encodings, ID mappings,
+      │  composite filename formats, which system holds what
+      ▼
+Manual execution, manual sanity-check, manual delivery
+```
 
-**Secondary risk**: zDB/gDB/WUDAS/TUDAS are denormalized, historically-grown schemas
-(zDB alone has 60+ numbered "Types"). An LLM free-generating SQL joins against raw
-physical tables is prone to hallucinating relationships that don't actually exist.
-RAG over docs reduces but doesn't eliminate this — docs drift from actual schema.
+**What's actually expensive here is not SQL syntax.** It's tribal knowledge: which table, which domain, which composite identifier format (e.g. wafer test filenames encode die class + wafer ID + process code + pass count + timestamp + IP + suffix in one string), and which of ~40,000 historical query variants over 7 years is the right shape for a given ask. That knowledge lives in a handful of people's heads.
 
-**Third risk, found via digital-clone memory cross-reference (2026-08-29) — the
-platform itself may not support this yet**: WSD already ran into this exact problem.
-**Die Inventory RAG** (OneTrust case #27580, Foo-Kit) was blocked because VCF's
-PAIS+DSM RAG platform only supports standard document RAG (PDF/HTML/DOCX/CSV) — **no
-SQL/DB-agent capability**. Its resolution was never recorded in later status reports
-(see `project_genai_program.md`) — unknown whether it was dropped, found another
-platform, or is still stuck. Query Copilot needs exactly the capability that already
-blocked a prior WSD project on WSD's own approved on-prem AI infra. This reframes the
-"GTO/security review" open item below from "not yet raised" to "check with Foo-Kit
-what actually happened to Die Inventory RAG first" — that answer determines whether
-the platform gap has since been solved.
+### 2.2 Future State
 
-Separately, GTO's standing **internal-vs-external routing rule** (see
-`project_genai_program.md`) requires internal-facing AI agents to run on **on-prem
-infra only** — cloud is explicitly closed off for internal use cases, and WSD has been
-told not to treat cloud as a workaround. Query Copilot is squarely internal (domain
-experts querying internal production yield/cost data), so any LLM inference in this
-design must go through Vectara's GTO-approved on-prem models (gpt-oss-120b,
-gemma-4-31b, etc.), not a cloud model like Claude/Bedrock.
+```
+Business stakeholder
+      │  natural language
+      ▼
+Domain Classifier  →  Template/Asset Matcher  →  Parameter Resolver
+      │
+      ▼
+Deterministic query assembly → Capped sandbox run
+      │
+      ▼
+Stakeholder reviews real sample rows → confirms → full execution against production
+```
 
-## Three architecture options considered
+The tribal knowledge doesn't disappear — it gets **encoded once** into a Catalog of known request templates (with explicit metadata/schema), and the classifier/matcher reuses it forever after. New requests that don't match the catalog fall back to a human, and the resolution gets added to the catalog — the system only gets more capable over time.
 
-**Option A — Template library + NL parameter extraction (recommended v1)**
-- Mine existing support-request history for the ~20-30 recurring query shapes (80/20).
-- Humans write and review each SQL template once, not per-request.
-- LLM's only job: RAG-match NL request → best template, then extract parameters
-  (dates, LotIDs, ProductTags) from the NL text.
-- Dynamic UI = the matched template's declared parameter schema (trivial to
-  generate — no free-form SQL-to-UI inference needed).
-- Unmatched/novel requests fall into today's manual queue, which also seeds new
-  templates over time — library grows from real demand.
-- Correctness risk near-zero (SQL itself isn't LLM-authored). Trade-off: doesn't
-  handle genuinely novel one-off questions, less flashy.
+### 2.3 Side-by-Side
 
-**Direction confirmed (2026-08-29): RAG/template-based generation + sandbox trial-run,
-not fine-tuning.**
-- Rejected fine-tuning a model on WSD's schema/API knowledge as the v1 generation
-  approach: the schema is actively moving (NXG Feeder rollout through ~ww38,
-  Transfer/Stitcher undated), fine-tuned weights go stale every time it changes,
-  there's no training corpus yet, RAG/context-injection is the established better
-  tool for factual/structural recall anyway, and on-prem fine-tuning's GTO governance
-  status is unresolved (WSD's own "Rich's team" fine-tune concept was still "in
-  concept eval" with no recorded outcome). Fine-tuning stays a possible v3+, once a
-  real confirmed-query corpus exists and NXG has landed.
-- **Confirmation step upgraded**: instead of (or in addition to) "requestor reads the
-  SQL," give the requestor a **sandboxed trial run** — capped rows/size/frequency,
-  executed against a read replica — so they can eyeball actual sample result rows
-  before trusting the number. This is a stronger safety gate than SQL literacy, since
-  most domain experts can spot "this returned 50,000 rows for 10 lots" far more
-  reliably than they can read a JOIN clause. WSD already has a working precedent for
-  this exact guardrail shape: the Zip File Access API's rate limiter (max 10 calls/30s
-  per user) and the proposed zDB RTDC hard-CAP (see `project_zdb_large_file_risk.md`).
-  Design requirement: the sandbox UI must surface sample rows/row counts, not just a
-  final aggregate number.
-- **API-signature-first refinement**: where an existing validated API already covers
-  an intent (e.g. the Zip File Access API), prefer generating an API call over a raw
-  SQL template — reuses validated joins/business logic, zero hallucinated-join risk,
-  consistent with "no reinventing wheels." Today WSD's API surface over
-  zDB/gDB/WUDAS/TUDAS is narrow/task-specific, so this only covers a slice — see the
-  API-consolidation idea below for closing that gap.
+| | Current | Future |
+|---|---|---|
+| Who can make a request | 2–3 SQL-literate experts | Any stakeholder, in English |
+| Turnaround | Hours to days, queued behind a person | Minutes, capped sample first |
+| Knowledge location | In people's heads, undocumented | Explicit Catalog (~100–a few hundred entries) |
+| Safety check | Read the SQL (unreliable) | Run a capped sandbox sample, judge real rows |
+| Scale-up path | Hire/train more SQL experts | Add catalog entries; classifier reuses them |
+| New/unseen request | Same bottleneck as before | Escalates to human once, then joins the catalog |
 
-**Concrete next actions (2026-08-29)**
-- **Build a 1000+ example query corpus** mapped to real human needs, sourced from
-  real-world queries (updated target 2026-08-30, up from the original 100+). **Confirmed
-  with Yu Han (2026-08-30): sourcing is deliberately broader than historical
-  support-request tickets** — it also includes live query logs and other real usage
-  data, not tickets alone. Start immediately, zero dependencies (no GTO approval, no
-  platform work needed). Does
-  triple duty: it's the Option A template library, it's the golden-query regression
-  set Option C will eventually need, and it's the training corpus fine-tuning would
-  need if that path is ever revisited later.
-- **Build the Asset Menu** (Library Inventory + API Catalog) — see dedicated section
-  below. This generalizes/replaces a narrower "consolidate APIs into one read-API
-  per zDB type" idea: the menu covers both existing APIs and existing libraries, not
-  APIs alone.
-  - *Naming*: avoid naming this "NXG-\<anything\>" — "NXG" is already overloaded at
-    WSD (Kin Lum's schema-driven Feeder/Transfer/Stitcher framework, the 2024 "NXG
-    WSD Cloud Data Pipeline" simplification effort, and a separately-referenced "NXG
-    TUDAS upgrade" cycle TUDAS's own SQLite migration is bundled into). A fourth
-    "NXG" meaning would add confusion, not remove it.
-  - *Sequencing idea*: for the zDB-type-specific slice of the API side, riding on
-    Kin Lum's Feeder rollout's existing per-type weekly schedule (Types 61/62 done;
-    ww35 = 25/26/27/49/50/51; ww36 = 56/58; ww37 = 14/29; ww38 = 13/1) avoids waiting
-    on the undated Transfer/Stitcher tracks.
+---
 
-**Option B — Semantic layer + guarded SQL generation (middle ground)**
-- Build a curated semantic layer (documented views over zDB/gDB/WUDAS/TUDAS with
-  plain-English column descriptions); RAG the KB against that layer, not raw DDL.
-- LLM generates SQL only against the semantic layer — joins are pre-resolved there,
-  making hallucinated relationships structurally harder.
-- Confirmation UI defaults to a structured plain-English "query summary" (source,
-  filters, output columns), with raw SQL as an optional advanced view for
-  SQL-literate requestors.
-- Add row-limit / cost guardrails and execute only against a read replica.
-- **Sequencing note**: if Kin Lum's schema-driven NXG migration (see
-  `project_ai_friendly_schema_driven_migration.md`) finishes formalizing zDB/gDB
-  schemas as part of its Feeder rollout, this semantic layer becomes much cheaper
-  to build. Worth sequencing Option B after/alongside that work rather than
-  reverse-engineering schema docs independently.
-- **Sequencing risk, found 2026-08-29**: this is a longer wait than it first looks.
-  Feeder rollout only finishes ~ww38 (mid-Sept 2026), and the migration's Transfer
-  and CLEADA-Stitcher tracks are still **TBD, no target date set**. If Query Copilot
-  needs joins beyond Feeder-covered zDB types, Option B is waiting on undated work.
-  Separately, the people who'd actually build this semantic layer — Kin Lum and
-  Tingyu — are the same two already mid-rollout on NXG Feeder *and* owning the
-  Vectara/G-AI Portal production agents; there's no obvious free bandwidth for
-  Option B before ww38 at the earliest.
+## 3. See It Work: Pre vs Post, Stage by Stage
 
-**Option C — Full agentic NL2SQL with self-verification (later / v2+)**
-- LLM freely generates SQL against real schema, executes in a sandbox, self-checks
-  (row-count sanity, EXPLAIN cost, schema-lint) before showing a human.
-- Closest to the original ask; most flexible, highest residual risk.
-- Needs a golden-query regression set to catch silent drift over time — which
-  Option A/B naturally produce as a byproduct (every confirmed request becomes a
-  labeled example feeding this set later).
-- **Possible future execution layer, found 2026-08-29**: Vectara (RAG, no agentic
-  execution) and Maverick (GTO's multi-agent orchestration platform, production live
-  08/17/2026, "agent-chain processing" workflows, but explicitly **no RAG support**
-  as of mid-2026) look like mirror-image gaps. A plausible v2 shape nobody's written
-  down yet: Vectara handles NL→template/semantic matching, Maverick handles the
-  confirm→execute→return step — once Maverick matures past its current Die
-  Inventory Agent pilot (see `project_maverick_agentic_platform.md`). Not a v1
-  dependency; worth tracking as Maverick evolves.
+Rather than describe the transformation abstractly, walk one real request all the way through.
 
-## Asset Menu: Library Inventory + API Catalog (consolidation umbrella, 2026-08-29)
+**Request:** *"Show me OQA test lots for AFEM-8234-AP1 closed since Jan 2026."*
 
-Broadens the "prefer an existing API over generating SQL" idea into a single unified
-concept: Query Copilot's matching step should draw from one **asset menu** covering
-two catalogued asset types, not SQL templates alone.
+### Pre (today)
 
-- **APIs** — already documented via signature. Directly callable, validated
-  business logic already enforced (join/aggregation correctness is not the LLM's
-  problem for these).
-- **Libraries** — long-history-built repo code that already implements a data
-  domain's logic (parsing, stitching, calculation) but isn't necessarily exposed as
-  a callable API yet. Catalogued with a metadata record per asset: what it does,
-  inputs/outputs, owning domain/team/repo, and — critically — whether it's already
-  network-callable or needs a thin wrapper before it can safely join the menu. An
-  NL-routed request can't reach into arbitrary repo code directly, so this
-  callable-or-not flag determines the real build cost per entry, not just a
-  documentation exercise.
+```
+One hand-written line, produced by someone who already knows the schema:
 
-Both asset types share one metadata schema so the matching step treats them
-uniformly regardless of implementation — SQL template, API call, or wrapped
-library call. Unmatched/novel requests still fall to the manual queue (per Option A
-above), which also signals where the menu needs a new entry.
+  select * from lot where productname like ('AFEM-8234-AP1%')
+    and testtype = 'OQA' and EndTime >= '2026-01-01 00:00:00'
 
-**Why this is a consolidation umbrella, not just a Query Copilot component**: once
-proven, any existing tool-specific effort elsewhere at WSD can be absorbed later
-simply by registering its underlying logic as one more catalogued library/API entry
-in the shared menu, rather than remaining a separate parallel effort. This project's
-notes deliberately don't name which specific existing efforts that would include —
-that's a portfolio-level consolidation call for later, not a Query Copilot design
-decision to make now.
+Cost: hours to days (queued behind the person who can write it).
+Knowledge required: table name, field names, wildcard convention — all tribal.
+Auditability: none — nobody else can tell how this was derived.
+```
 
-**Rollout model**: onboard one domain's existing users onto this architecture at a
-time — catalog that domain's APIs+libraries first, prove the menu-matching +
-sandbox trial-run for that domain, then repeat for the next. Same narrow-first
-phasing already used elsewhere in this project (the digital-clone Proposal A→B→C
-pattern), just applied at the domain level instead of the whole-system level.
+### Post (with Co-Pilot) — the same request, stage by stage
 
-## Long-term plan: Agent-native direct consumption of the Asset Menu (2026-08-30)
+| # | Stage | Model? | What comes out |
+|---|---|---|---|
+| 1 | **NL request** | — | `"Show me OQA test lots for AFEM-8234-AP1 closed since Jan 2026"` |
+| 2 | **Domain classify** | LLM | `domain = "be-module"` |
+| 3 | **Template match** | LLM | `template = "lot_by_product_test_date"` (1 of ~100 catalog entries in this domain) |
+| 4 | **Parameter extraction** | LLM | `{ product: "AFEM-8234-AP1", test_type: "OQA", since: "2026-01-01" }` |
+| 5 | **Deterministic assembly** | — (software) | `select * from lot where productname like ('AFEM-8234-AP1%') and testtype='OQA' and EndTime >= '2026-01-01 00:00:00'` |
+| 6 | **Capped sandbox run → confirm** | — (software) | Runs with a row cap, shows the requestor real sample rows, waits for confirmation before the uncapped production run |
 
-**Why this isn't v1**: current GTO policy permits only **on-prem Vectara RAG Agentic
-deployment** for internal-facing agents (see the internal-vs-external routing rule
-above), and the approved on-prem model roster (gpt-oss-120b, gemma-4-31b, etc.) sits
-well below Claude/ChatGPT-class frontier accuracy on the reasoning/tool-selection/
-argument-extraction tasks this design leans on. That gap is exactly why Option A
-deliberately keeps the LLM's job narrow — RAG-match to one template, extract a few
-parameters — instead of trusting it to reason freely across multiple assets or chain
-calls together. Widening model autonomy today, on today's approved models, would raise
-correctness risk without the accuracy to back it up.
+**Same query text comes out at stage 5 as the hand-written line from "Pre."** Nothing about the underlying data access changed — what changed is *who* can produce it, *how fast*, and *how auditable* the path getting there is. Every stage above is a discrete, inspectable artifact — if something's wrong, you can see exactly which stage produced the wrong value, instead of debugging one opaque hand-written line.
 
-**The long-term shift**: once that gap closes — either (a) GTO approves a
-higher-accuracy model for this narrowly-scoped, sandboxed use case, revisiting the
-internal-vs-external routing rule, or (b) on-prem models close the gap themselves —
-evolve the Asset Menu from "matched by a constrained NL-classifier" into "consumed
-directly by a tool-using Agent." Register every catalogued template, API, and wrapped
-library as a callable tool: the Asset Menu's shared metadata schema (name, capability
-description, inputs/outputs, owner, callable-or-needs-wrapper flag) already doubles as
-the tool schema an agent would need. The Agent then plans and chains its own tool calls
-instead of being limited to single best-match lookups, unlocking compositional requests
-(e.g. "compare X across two zDB types") that Option A's one-shot matching can't serve
-today.
+---
 
-**What must not change**: the sandbox trial-run + human-confirmation gate (see Key
-Safety Upgrade) stays mandatory no matter how capable the model gets — a better model
-changes *what* the Agent plans, not whether a human sees real sample rows before
-trusting the number. This makes the long-term plan additive to Option A/B, not a
-replacement of the safety architecture.
+## 4. Proposed Architecture / Workflow
 
-**Dependencies / triggers** (none met yet — tracked, not scheduled):
-- GTO policy movement on internal-vs-external routing, or the on-prem roster closing
-  the accuracy gap — whichever comes first.
-- Maverick maturing past its current Die Inventory Agent pilot to support this kind of
-  tool-chaining execution — mirrors the "Vectara does matching, Maverick does
-  execution" split already sketched under Option C.
-- A confirmed-query corpus large enough (from Option A/B usage) to evaluate a more
-  autonomous agent against a regression set before granting it wider tool access.
+```
+Natural-language request
+      │
+      ▼
+① Domain Classifier            (LLM — narrow classification, ~5-10 categories)
+      │
+      ▼
+② Template/Asset Matcher       (LLM — match against ~20-80 catalog entries within the domain)
+      │
+      ▼
+③(a) Parameter Extraction      (LLM — pull stated values: dates, product names, test type)
+③(b) Composite ID Resolution   (Deterministic — assemble filenames/patterns from parts;
+                                 never LLM free-generation)
+      │
+      ▼
+④ Multi-step chain execution   (Deterministic — sequential ID hand-off between calls,
+                                 for templates that chain 2+ queries)
+      │
+      ▼
+⑤ Query assembly                (Deterministic compiler — wildcards, IN-lists, date formats)
+      │
+      ▼
+⑥ Capped sandbox run             (Deterministic — capped rows / size / frequency)
+      │
+      ▼
+   Stakeholder reviews real sample rows → confirms
+      │
+      ▼
+⑦ Confirmed execution against production (Deterministic)
+      │
+      ▼
+⑧ Unmatched / low-confidence → escalate to human → resolution added to catalog
+```
 
-Not a v1/v2 dependency — noted now so the Asset Menu's shared metadata schema is
-designed tool-call-ready from the start, even though nothing acts on it until the
-model/policy gap actually closes.
+**Governing rule:** the LLM decides *which known intent this is and what values were stated*; deterministic software decides *exactly how the authorized query is built and run*. The LLM never sees production data directly and never generates a query string from scratch.
 
-## Recommendation
+### 4.1 Where LLM Is Involved — and Where It Explicitly Is Not
 
-Start with **Option A**, with the asset menu (above) as how its template library
-grows over time — not SQL templates alone, but templates + catalogued APIs +
-catalogued libraries, matched uniformly. Rationale: matches Yu Han's own stated engineering
-principles — 80/20 scoping, no reinventing wheels, narrow-first-then-widen (same
-phasing philosophy already applied to the digital-clone project's Proposal A→B→C).
-Ships fast, near-zero correctness risk, and the usage data it collects builds the
-case (and the semantic-layer requirements) for Option B later. Option C is a
-possible v2 once A/B have logged enough real traffic for a safety-net regression set.
+| Step | LLM? | Why |
+|---|---|---|
+| ① Domain classify | **Yes** | Language understanding, low-stakes classification |
+| ② Template match | **Yes** | Matching phrasing variance to known intents |
+| ③(a) Extract stated values | **Yes** | Slot-filling from free text — LLM's actual strength |
+| ③(b) Composite ID assembly | **No** | Fixed string format — a template-fill task, not a reasoning task |
+| ④ Multi-step chaining | **No** | Sequential execution, no judgment needed |
+| ⑤ Query assembly | **No** | Deterministic compiler |
+| ⑥ Sandbox run | **No** | Rule-based caps |
+| ⑦ Confirmed execution | **No** | Deterministic |
+| ⑧ Escalation threshold | **No** (rule) | Confidence score from step ② compared to a fixed threshold |
 
-**Reinforced 2026-08-29**: Option A holds up even more strongly once cross-checked
-against the rest of the team's current workload. Option B has two independent
-blockers (Transfer/Stitcher still undated, no free Kin Lum/Tingyu bandwidth before
-ww38), and Option C has a live precedent (Die Inventory RAG) showing WSD's currently
-approved on-prem AI platforms can't yet execute SQL-agent workloads. Option A is the
-only path with no dependency on either the schema migration finishing or a platform
-capability gap closing.
+Only 3 of 9 steps touch a model at all, and none of the three require deep reasoning — they're classification and slot-filling over a small, curated catalog.
 
-## Open items / not yet decided
+### 4.2 Model Tier
 
-- Final name (avoid "NXG" — see naming note above, now three prior conflicting uses).
-- Whether/how this sequences against Kin Lum's schema-driven NXG migration
-  (Feeder/Transfer/Stitcher) — potential dependency for Option B's semantic layer,
-  and now also for the "one read API per type" idea above. Feeder finishes ~ww38
-  (mid-Sept 2026); Transfer/Stitcher have no target date yet.
-- **Concrete next action 1**: ask Foo-Kit what actually happened to Die Inventory RAG
-  (OneTrust #27580) — it hit the same "RAG platform has no SQL/DB-agent capability"
-  wall that Query Copilot would need to clear for Option B/C. His answer tells us
-  whether that platform gap has since been solved, or whether it's still open.
-- **Concrete next action 2**: start building the 1000+ example query corpus, sourced
-  from real-world queries — confirmed 2026-08-30 to include live query logs/other
-  usage data, not just historical support tickets (see above) — no dependencies, can
-  start now.
-- **Concrete next action 3**: design the Asset Menu's shared metadata schema
-  (library/API name, capability description, inputs/outputs, owning domain/team/
-  repo, callable-or-needs-wrapper flag) and pick the first domain to catalog and
-  onboard.
-- GTO/security review: since this generates-then-executes SQL against production
-  yield/cost data, it likely needs the same kind of review path used for MCP server
-  approvals — not yet raised with GTO/security. Also subject to GTO's
-  internal-vs-external routing rule (on-prem-only inference; no cloud LLM).
-- No v1 component sketch / build-size estimate done yet (offered, not yet requested).
-- No decision yet on which option to actually pursue.
-- Long-term Agent-native Asset Menu consumption (see dedicated section above) — gated
-  on GTO policy/on-prem model accuracy closing the gap to Claude/ChatGPT-class models;
-  not scheduled, tracked only.
+Classification into ~5–10 domains, matching against ~20–80 known templates, and structured slot-filling of a handful of parameter values are not deep-reasoning tasks. A fast, low-cost model tier (e.g. Claude Haiku-class) is capability-appropriate here — reaching for a frontier-tier model would be paying 5x+ per request for accuracy headroom this task doesn't need. Rough order of magnitude: at cheap-tier pricing, a single classify+extract request costs an estimated **~$0.002** — cost is not the constraint on this design; task fit is.
+
+**Two things to validate before committing to a specific model, not to assume:**
+1. **Benchmark against real historical queries** — pull a held-out slice of the golden-query corpus, run it through the candidate model, and measure classification/extraction accuracy directly, rather than reasoning about it in the abstract.
+2. **Confirm any data-residency / network-isolation requirement with IT/security up front.** If production inference must stay on-prem, the narrow-scope design still holds — swap in an approved on-prem or open-weight model for the runtime path. A cloud model (used for offline catalog curation, see §5) can still be used to help *build* the catalog even if it can't run at request time.
+
+### 4.3 What LLM Never Does
+
+Never sees production data directly. Never free-generates a query string. Never assembles composite identifiers (e.g. the wafer test filename format) from scratch — that's a deterministic template fill, because a single wrong character there is a silently-wrong query.
+
+### 4.4 Safety Mechanism
+
+Confirmation is **not** "read the generated SQL and spot the bug" — that's an unreliable ask even of experts. It's a **capped sandbox run**: the system executes the matched query with hard caps on row count / result size / frequency, and the stakeholder judges real sample rows before authorizing the full production run. This stays mandatory regardless of how capable the underlying model gets.
+
+---
+
+## 5. Real Query Evidence (Grounding, Not Guesswork)
+
+Sampled from the "most frequent" query log across two domains — **be-module** and **fbar-wafer**:
+
+```
+select * from lot where productname like ('AFEM-8234-AP1-QA-RF2%')
+  and testtype = 'OQA' and EndTime >= '2022-01-01 00:00:00'
+
+SELECT * FROM WaferTraceZip WHERE DieClassName = '2YB4-1701'
+  AND WaferID = 'N2481-P076'
+  AND ParaFileName = '2YB4-1701_N2481-P076_PR-EG4090-264_FULL-2PASS_20260319_222655_IP192.168.0.2_Q3JMBAS'
+```
+
+Findings that shaped the architecture above:
+
+- **No joins, no aggregation in the observed high-frequency set.** Every sample is a single-table point lookup filtered by identifiers. This is a classification/slot-filling problem, not a query-planning problem — a cost-based cross-source optimizer would be solving a problem we don't actually have yet.
+- **Composite identifiers are the real complexity.** A stakeholder will never type `2YB4-1701_N2481-P076_PR-EG4090-264_FULL-2PASS_20260319_222655_IP192.168.0.2_Q3JMBAS`. The system must resolve/construct it from the parts the user *did* say — deterministically.
+- **Some templates are 2-step chains** — e.g. query one table for matching lot IDs, then feed those IDs into a second table's `IN (...)` filter. This needs simple sequential ID hand-off, not a general DAG scheduler.
+- **Domain is a natural first-level classifier.** The query log is already organized by domain — use that grouping as the first classification step rather than a flat pool of ~100+ templates.
+
+---
+
+## 6. Build Plan
+
+1. **Corpus:** mine 1000+ "golden" queries from the 40,000+ historical log; attach NL context (business description + example phrasing) to each — the labeled data the classifier/matcher needs and doesn't yet have. An LLM can draft candidate descriptions from the raw query strings, but a subject-matter expert must review and correct them — reverse-engineering intent from a query string alone is error-prone.
+2. **Catalog:** consolidate the deduplicated query shapes into a Catalog — each entry schema-driven (parameters, types, valid ranges). Explicitly document composite-identifier formats (field-by-field meaning of encoded filenames) as part of this — this is a hard blocker for parameter resolution (§4, step ③b) and can only come from the people who currently hold that knowledge.
+3. **Runtime:** wire the chosen model to do domain classify → template match → parameter extraction, then hand off to the deterministic query assembler and sandbox-run executor.
+
+**Target v1 scope:** the highest-frequency, highest-value request shapes identified from the golden-query corpus — not full coverage of the historical 40,000+ variants.
+
+---
+
+## 7. Most Challenging Section
+
+**Composite identifier resolution and catalog curation labor.**
+
+The single hardest, least-automatable piece of this project is decoding and documenting what each segment of identifiers like `2YB4-1701_N2481-P076_PR-EG4090-264_FULL-2PASS_20260319_222655_IP192.168.0.2_Q3JMBAS` actually means, and building the deterministic rules to reconstruct/pattern-match them from partial, business-friendly input. This can't be reverse-engineered reliably by an LLM from the strings alone — it requires the people who currently hold this tribal knowledge to sit down and write it out, once, per domain. It's a one-time cost, but it sits squarely on the critical path: nothing downstream can be built or tested until this documentation exists. Budget real subject-matter-expert time for this, not just engineering time.
+
+---
+
+## 8. Most Risky Section
+
+**The model-tier accuracy assumption is untested.**
+
+The entire pipeline design (§4) is deliberately narrow — 3 of 9 steps touch a model, and none of the three require deep reasoning — on the assumption that a fast, low-cost model tier is accurate enough for classification and slot-filling once the catalog exists. That assumption is *reasonable* (§4.2 explains why), but it has not yet been measured against real historical queries. Two concrete failure modes if it's wrong:
+
+- If real classification/extraction accuracy comes in lower than assumed, v1 may need a narrower per-domain candidate list, more aggressive rule-based pre-filtering before the model is invoked at all, or a lower auto-confirm threshold — pushing more requests to human escalation than planned and eroding the "minutes not days" value proposition.
+- The exact final catalog size is still pending a full dedup pass on the 40,000+ log — it could land anywhere from ~100 to a few hundred entries. A larger-than-expected catalog makes the template-matching step (②) harder and raises the same accuracy question from a different angle.
+
+**Mitigation already designed in:** the capped-sandbox-run + human-confirmation gate is mandatory regardless of model accuracy, which caps the damage from a wrong classification — a bad match produces a bad sample the stakeholder catches, not a bad production run. This is why the risk above is tolerable rather than disqualifying, and why it's worth resolving with a benchmark before committing to a v1 timeline (see next step below).
+
+**Recommended next step:** benchmark the candidate model tier against a held-out slice of the golden-query corpus before committing to a v1 timeline — this number determines whether the design in §4 holds as-is or needs adjustment.
+
+---
+
+## Appendix A — Buy vs Build
+
+We considered buying a semantic-layer / NL-to-SQL product (e.g. Snowflake Cortex Analyst, dbt Semantic Layer + MetricFlow, Cube.dev) instead of building this. **Decision: build.**
+
+**The execution surface is our own APIs, not a SQL warehouse.** These products emit SQL text against warehouse tables. Our target is "call our existing data-access APIs with the right parameters," where the deterministic business-logic mapping (joins, cross-system stitching, ID resolution) is **already built and running** inside those APIs. No semantic-layer product speaks our APIs' proprietary query-string dialect. Buying one would leave 100% of the actual integration work undone — we'd be paying for a capability (SQL generation over a warehouse) we don't need, while still building the capability we do need (NL → our API calls) from scratch anyway.
+
+**What we keep from "buy" thinking:** the *pattern* — a declarative catalog of business-callable capabilities, an LLM constrained to selecting from that catalog rather than generating free text, and a deterministic compiler/executor underneath. That pattern is exactly what these products do internally; we're applying the same pattern to our own API layer instead of to a warehouse.
+
+**One exception, not a reason to buy the whole thing:** graph/lineage data (gDB — wafer/lot genealogy, process path) doesn't fit a relational semantic model well, regardless of vendor. It stays a separate capability behind its own adapter whether we build or buy — so it isn't an argument for buying.
+
+| | Buy: Semantic-Layer Product | Build: Catalog Match on Our APIs |
+|---|---|---|
+| Output | SQL against warehouse tables | Calls to our existing APIs |
+| Runtime dependency | Cloud LLM (typical for these products) | Model tier of our choosing |
+| Speaks our API dialect | No | Yes — that's the point |
+| Reuses existing deterministic logic | No — logic would be rebuilt in the vendor's semantic model | Yes — already built and running |
+| Graph/lineage (gDB) fit | Same limitation, regardless of vendor | Same — separate adapter either way |
+
+---
+
+## Status
+
+**v1:** Detailed design (this document) — ready to move from proposal to build, pending sign-off on the build plan (§6) and SME time allocation for composite-identifier documentation, plus a model-tier benchmark (§8) before committing to a timeline.
+
+---
+
+## Appendix B — Design Process & Clarification Log
+
+This design went through multiple rounds of clarification and one explicit direction change. Recorded here so the reasoning trail survives alongside the design itself, not just in a chat transcript that eventually scrolls out of context.
+
+**Phase 1 — Architecture concept, sanity-checked.** Started from a general "LLM plans, deterministic software executes" architecture concept (business-language interpretation → semantic layer → logical planner → physical planner → execution adapters → result validation, with a typed intermediate representation borrowed from compiler design). Assessed as directionally sound — it matches how real production systems in this space work (semantic-layer + LLM front ends) — but flagged as over-scoped for a v1: a dual-stage LLM planner, a cost-based cross-source physical optimizer, and a full BI-style metric/dimension semantic model are all more machinery than a first version needs.
+
+**Phase 2 — Data architecture clarified; buy option evaluated.** The actual data layout was established: raw files (70+ formats) and processed/indexed binary both live in S3; a metadata database holds only filterable attributes and storage pointers, never the data itself; a graph store (gDB) holds process/lineage relationships separately. Against this, a "buy" option (Snowflake Cortex Analyst, as a semantic-layer product) was evaluated for how much data migration it would require. Conclusion: only metadata needs to become SQL-visible to Snowflake — raw binary never moves.
+
+**Phase 3 — Graph/lineage carve-out identified.** gDB's graph-shaped queries (lineage, genealogy, multi-hop traversal) don't fit a relational semantic model well, regardless of vendor. Established early that this needs its own adapter no matter what — not an argument for or against buying, just a fixed constraint.
+
+**Phase 4 — Build vs buy reversed.** A key fact changed the recommendation: a layer of existing, higher-level APIs already exists, accepting a "SQL-style query string" and executing deterministically against the underlying systems — meaning the expensive part (cross-system business-logic mapping) is **already built**. Cortex Analyst-style products generate SQL against a data warehouse; that's a different target than calling proprietary APIs. Buying one would leave the real integration work (natural language → our API calls) completely undone. Decision flipped from "evaluate buying" to "build," and has held since.
+
+**Phase 5 — Scale clarified; problem reframed.** Real numbers: 7 years, 40,000+ historical queries, deduplicating to an estimated 100–10,000 distinct business-case "templates." This reframed "natural language → select API + fill parameters" from an open-ended generation problem into a **classification + retrieval + slot-filling** problem — the single biggest simplification in this design. It also surfaced the key blocking gap: no natural-language descriptions exist yet for these templates, only raw query strings.
+
+**Phase 6 — Real query samples reviewed directly.** A real "most frequent" query sample set (two domains: be-module, fbar-wafer) was reviewed line by line. Findings that reshaped the pipeline: (a) the dominant workload has no joins or aggregation — a cost-based physical optimizer isn't needed for v1; (b) composite identifiers (e.g. wafer test filenames encoding 6-7 fields in one string) are the real hidden complexity, needing a dedicated **deterministic** resolution step, never LLM free-generation; (c) some templates are 2-step ID-handoff chains, not single calls; (d) domain (be-module / fbar-wafer / …) is a natural, already-present first-level classifier.
+
+**Phase 7 — Pipeline right-sized against those findings.** Cut the cost-based physical optimizer and the dual-LLM-planner stages from v1 scope. Added composite-identifier resolution and multi-step chaining as explicit, named pipeline steps. Confirmed — against current published guidance on LLM tool-selection accuracy — that in-context, domain-grouped classification is sufficient at this scale without dedicated vector-retrieval infrastructure; that's deferred until a domain's candidate list actually grows past the range where in-context selection degrades.
+
+**Phase 8 — LLM involvement and model tier mapped precisely.** Landed on exactly 3 of 9 pipeline steps touching a model (domain classify, template match, simple slot-filling) — see §4.1 and Appendix (slide 3 in the deck) for the full breakdown. Composite-identifier assembly was explicitly excluded from the LLM's job even though it looks "structured" — it's a template-fill task, not a reasoning task. Concluded a fast, low-cost model tier is capability-appropriate for the 3 touchpoints that do need a model (not a frontier-tier model), with cost estimated around $0.002/request. Any requirement to run entirely on-prem or on an open-weight model was framed as a policy/infrastructure question to confirm with IT/security — not a model-capability question — and the design was built to not depend on the answer either way.
+
+**Phase 9 — First draft leaked content from an unrelated deck.** The project was named "WSD Data Access Co-Pilot." A first draft of this document and a matching-style slide deck were produced using an existing internal file (`new_proposal.pptx`) purely as a visual-style reference. **In that first draft, real content from that reference file leaked in** — it turned out to be an existing, unrelated "WSD Data SaaS Co-Pilot" brainstorm (different assumptions, different author) containing specific organizational claims: an on-prem-only governance policy, specific system names, a named build plan, and a "sandbox trial run" mechanism presented as already-existing. These got absorbed into the first draft without being critically separated from this conversation's own conclusions.
+
+**Phase 10 — Explicit correction: this is a new design, not a fine-tune.** On review, this was flagged and corrected directly: reuse *only* the reference file's visual style (palette, fonts, layout grammar) — none of its content, terminology, or assumed constraints. Both this document and the deck were rewritten from this conversation's own material only. **This is the key provenance fact this document exists to record: this is a new design, independent of the prior "WSD Data SaaS Co-Pilot" brainstorm — not a refinement of it.** Where a mechanism here resembles something in that other file (e.g. a sandbox-run confirmation gate), it's because this conversation arrived at it independently, not because it was copied.
+
+**Phase 11 — Concrete worked example added.** A dedicated stage-by-stage walkthrough (§3) was added — one real request traced from natural language through to a final query awaiting sandbox confirmation — specifically so the pipeline in §4 isn't left abstract.
+
+**Phase 12 — Self-containment gaps closed.** Two gaps were caught by direct questions and fixed: "v1" had been used repeatedly without ever being defined (fixed — see the Executive Summary definition above); and "3 of 9 pipeline steps" referenced a 9-step breakdown that existed only in this document's §4.1 table, never drawn out anywhere a reader could see it without cross-referencing. Fixed by adding a dedicated, fully-labeled 9-step diagram to the deck, with this document's §4 as its documented source rather than an implicit one.

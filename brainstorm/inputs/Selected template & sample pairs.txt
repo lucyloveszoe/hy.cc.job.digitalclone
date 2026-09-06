@@ -1,0 +1,52 @@
+1. Domain #1, be-module (literal values masked, with a real example each)
+
+(1) 
+select * from lot where productname like ('?') and testtype = '?' and EndTime >= '?'
+select * from lot where productname like ('AFEM-8234-AP1-QA-RF2%') and testtype = 'OQA' and EndTime >= '2022-01-01 00:00:00'
+ 
+ (2)
+ SELECT * FROM NCClothoHeader WHERE productname IN ('?') AND lotid IN ('?')
+ SELECT * FROM NCClothoHeader WHERE productname IN ('AFEM-8283-AP1-TOP') AND lotid IN ('PT6331607152','PT6331308203','PT6341807381', ...)
+ 
+ (3)
+ SELECT * FROM NCInstrumentInfo WHERE FileName IN ('?')
+ SELECT * FROM NCInstrumentInfo WHERE FileName IN ('AFEM-8283-AP1-2DID_BE-LXI-V0003_PT6313008805_1A_20260830_010012_IP172.16.5.118_Q8U1AA7.csv','AFEM-8283-AP1-2DID_BE-LXI-V0003_PT6313008805_2A_20260830_040508_IP172.16.5.118_Q8U4AF5.csv', ...)
+ 
+(4) 
+ select * from cstatbin where productname in ('?') and testtype = '?' and lotid in ('?')
+ select * from cstatbin where productname in ('AFEM-8111-AP2-QA-RF1') and testtype = 'OQA' and lotid in ('PT6352909860-O')
+ 
+(5)
+ SELECT * FROM ncstatbin WHERE productname IN ('?')
+ SELECT * FROM ncstatbin WHERE productname IN ('AFEM-8283-AP1-TOP') AND lotid IN ('PT6331607152', ...)
+ 
+(6) 
+ select * from cdetailslim where productname in ('?') and lotid in ('?') and parametername in ('?')
+ select * from cdetailslim where productname in ('ACPF-9071-AP1-RF1') and lotid in ('FT6241007580')
+ 
+ 
+2. Domain #2, fbar-wafer (literal values masked, with a real example each)
+
+ (1) 
+ SELECT * FROM waferparameta WHERE FileName in ('?') AND DieClassName in ('?') AND WaferID in ('?')
+ SELECT * FROM waferparameta WHERE FileName in ('2YS9-1702_N0056-F102_PR-EG4090-266_FULL-2PASS_20260816_000032_IP192.168.0.2_Q8G0AAH_DELTA') AND DieClassName in ('2YS9-1702') AND WaferID in ('N0056-F102')
+ 
+ (2)
+ SELECT * FROM wafertracezip WHERE parafilename IN ('?')
+ SELECT * FROM wafertracezip WHERE parafilename IN ('NPI-S-2ZA6-1501-GSG_J88137E5SOG1-POSTTRIM2_SEZA6A9264_FULL-1PASS_20260902_200850_IP192.168.1.82_Q92KAIQ')
+ 
+ (3) 
+ SELECT * FROM waferstatbin WHERE filename IN ('?')
+ SELECT * FROM waferstatbin WHERE filename IN ('2XW8-W171VS_1751-F268A_PR-EG4090-307_FULL-1PASS_20260901_100823_IP192.168.0.2_Q91AAIC')
+ 
+ (4)
+ SELECT * FROM WaferDetailSlim WHERE FileName IN ('?') AND ParameterName IN ('?')
+ SELECT * FROM WaferDetailSlim WHERE FileName IN ('NPI-2YQ6-1701-8303_1944-H010A_NE2UHMF02_FULL-1PASS_20260902_142941_IP192.168.48.208_Q92EBDL') AND ParameterName IN ('AT_HIGH_MAG_C1_S21')
+ 
+ (5) 
+ SELECT * FROM wafer WHERE FileName LIKE '?'
+ SELECT * FROM wafer WHERE FileName LIKE '%2ZA6-1501%'
+ 
+ (6) 
+  Select * from WaferTraceZip where DieClassName = '?' AND WaferID = '?' AND Process = 1`
+  SELECT * FROM WaferTraceZip WHERE DieClassName = '2YB4-1701' AND WaferID = 'N2481-P076' AND ParaFileName = '2YB4-1701_N2481-P076_PR-EG4090-264_FULL-2PASS_20260319_222655_IP192.168.0.2_Q3JMBAS'
