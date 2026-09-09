@@ -4,7 +4,7 @@ description: "Yu Han's WSD SW team 2024 weekly-status archive (ww01-ww52) — Cl
 metadata:
   node_type: memory
   type: project
-  modified: 2026-08-22T00:51:29.386Z
+  modified: 2026-09-08T03:18:41.743Z
   originSessionId: 60cad4c7-e6f3-4ac2-9f91-af516207847b
 ---
 
@@ -22,7 +22,7 @@ Synthesized from 47 of Yu Han's weekly "WWL" status reports to KP, covering cale
 
 **GTO Jira boarding**: the SW team's adoption of Broadcom GTO Jira (vs. WSD's own Jira) as its requirements/priority coordination tool — initiated per KP's FY24-goal recommendation, piloted via the WSD Radar-2-Jira project, formally closed as a setup effort 02/06/2024 (see [[reference-wsd-systems]] for the JIRA reference entry).
 
-**Recurring backlog items that never moved all year**: "Pushing QRE data into zDB," "Dynamic Wafer Radius Processing," and "MIPI Translation to Infer Module States in Test" appear as "(Initiated)" in the New-Requests-Investigation backlog in essentially every single 2024 weekly report without ever advancing — a useful signal that this particular backlog bucket is effectively frozen/low-priority rather than actively worked.
+**Recurring backlog items that never moved all year**: "Pushing QRE data into zDB," "Dynamic Wafer Radius Processing," and "MIPI Translation to Infer Module States in Test" appear as "(Initiated)" in the New-Requests-Investigation backlog in essentially every single 2024 weekly report without ever advancing — a useful signal that this particular backlog bucket is effectively frozen/low-priority rather than actively worked. **Update**: "Dynamic Wafer Radius Processing" unfroze in 2025 — see [[project-wafer-yield-by-radius-dc2pass]].
 
 **Inari P34 (new CM sub-site) zDB/pCD accessibility**: WSD extended zDB/pCD/Workflow infra to a new CM sub-site (Inari P34) in 2024 (Phase 2 dedicated-server approach preferred over a temporary P3-linked Phase 1) — a smaller-scale precedent for the kind of new-CM-site infra rollout later repeated at much larger scale in [[project-amkor-vietnam-expansion]] (2026). Last recorded activity ~08/20/2024; no confirmed closure date found in the material reviewed.
 

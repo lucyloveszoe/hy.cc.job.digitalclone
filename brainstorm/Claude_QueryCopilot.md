@@ -228,6 +228,72 @@ The entire pipeline design (§4) is deliberately narrow — 3 of 9 steps touch a
 
 ---
 
+## 9. Next Upgrade — Agent-Oriented API Transition (v2 Direction)
+
+**Not in v1 scope.** Recorded here as the agreed direction for the upgrade after v1 ships, so the reasoning isn't lost between now and then.
+
+### 9.1 Why this is a separate upgrade, not a v1 feature
+
+v1's Co-Pilot is one specific consumer of the existing SQL-string APIs — it does NL → classify → match → extract, then assembles the string itself. The broader industry trend is APIs built so *any* agent can call them directly, without a bespoke NL front-end doing the interpreting each time. Two of the three ideas from that discussion were selected to pursue now; the third is explicitly deferred (§9.4).
+
+### 9.2 Idea #1 + Idea #2 are one artifact, not two sequential projects
+
+These were picked separately but turn out to share the same underlying work:
+
+- **Idea #2 (typed, auto-describable contract):** replace the SQL-string request format with a typed schema per domain/entity — `{domain, entity, filters: {product, test_type, since, ...}}` instead of a hand-built SQL-style string. Published as OpenAPI/JSON-Schema, so tool definitions can be *generated* from it rather than hand-written.
+- **Idea #1 (catalog published as agent tools):** each catalog entry (e.g. `lot_by_product_test_date`) becomes a callable tool — name, description, typed parameters — usable by any agent, not just Co-Pilot's internal classifier.
+
+**The connection:** §6 (Build Plan, step 2) already commits to making each catalog entry "schema-driven (parameters, types, valid ranges)" — that work exists in the v1 plan regardless of this upgrade. That same schema *is* the typed contract Idea #2 needs, and it's exactly what Idea #1's tool definitions get generated from.
+
+**The v2 to-do plan** (one shared build sequence — this is also Slide 7 in the deck, `WHY-tag` per step matches the slide):
+
+| # | Step | Tag | What it does |
+|---|---|---|---|
+| 1 | Define Typed Schema | Foundation | Parameters, types, valid ranges per catalog entry — already funded by v1's catalog-curation labor (§6), not new work. |
+| 2 | Publish OpenAPI Contract (#2) | Contract | One machine-readable spec per domain — the typed request format that replaces the SQL-style string as the public contract. |
+| 3 | Generate Agent Tools (#1) | Tooling | Callable tool definitions generated from the spec — named, typed, discoverable by any agent, not hand-built per entry. |
+| 4 | Wrap the Confirm Gate | Safety | Sandbox-cap → confirm becomes a two-call contract: `preview` returns a token, `execute` requires it — same mandatory gate (§4.4), agent-callable. |
+| 5 | GTO/MCP Policy Check | Policy Gate | Confirm whether an agent-callable data API needs the same review as the approved Confluence/GitHub/Jira/Rally MCP servers (§9.5). |
+| 6 | Pilot One Domain | Pilot | Ship #1+#2 for one domain end-to-end — prove the pattern before scaling to the rest of the catalog. |
+
+No separate schema-authoring effort for #2 on top of #1 — one schema, two expressions of it (a published spec, and a servable tool set). Steps 1–3 build that shared artifact; 4–6 make it safe and provable before scaling.
+
+### 9.3 What does and doesn't change underneath
+
+| Layer | v1 (today) | v2 (this upgrade) |
+|---|---|---|
+| Request format callers use | Free-text NL, interpreted by Co-Pilot's own LLM steps | Typed tool call with named parameters — no NL interpretation needed if the caller is already an agent |
+| Who does domain-classify / template-match | Co-Pilot's steps ①② (LLM) | The calling agent's own tool-selection — tool *is* the classification. Steps ①② collapse for external callers. |
+| Deterministic assembler (composite-ID resolve, query assembly) | Internal to Co-Pilot, steps ④⑤ | **Unchanged in function** — moves one level up the stack to sit behind the typed tool contract instead of behind Co-Pilot's NL pipeline. Still the same deterministic compiler, still never touched by a model. |
+| Underlying execution APIs (SQL-style string, S3/metadata-DB/gDB) | Unchanged | **Still unchanged.** This upgrade changes the *request contract facing callers*, not the execution engine. The deterministic assembler still compiles down to the same SQL-style string internally. |
+| Sandbox-cap → confirm gate | UI: stakeholder reviews sample rows, confirms | Becomes a two-call tool contract: a `preview` call returns capped sample rows + a confirmation token; a separate `execute` call requires that token. Same mandatory gate (§4.4), expressed as protocol instead of UI. |
+| Co-Pilot's own NL front door | The only caller | Becomes *one more caller* of the published tool layer, instead of owning a separate hand-rolled pipeline. (Not required for v2, but a natural follow-on simplification once the tool layer exists.) |
+
+**Net effect:** this upgrade is lower-risk than it might sound — it does not touch the execution APIs or the deterministic assembler's logic, only where the typed/tool contract sits relative to them.
+
+### 9.4 Idea #3 (composite-ID resolution as its own service) — held, not dropped
+
+Splitting composite-ID resolution (§7's hardest problem) out from Co-Pilot into its own standalone, independently-callable service is still worth doing eventually — both sampled domains (be-module, fbar-wafer) lean on composite identifiers, so a standalone resolver would pay off for any future agent-facing API, not just this one.
+
+**Why it's held:** its difficulty is gated by the deterministic-assembly module's own maturity — steps ④ (composite-ID resolution) and ⑤ (query assembly) inside Co-Pilot need to prove out in production first. Extracting a service boundary from logic that hasn't yet been validated risks exporting an unstable interface to new callers instead of a solid one. Revisit once v1's deterministic core has run against real requests long enough to trust it.
+
+### 9.5 Open items before committing to a v2 timeline
+
+- **GTO/MCP policy check:** publishing catalog entries as agent-callable tools likely means an MCP-server (or equivalent) surface for an internal data API. Confirm with GTO/security whether this needs the same review as the currently-approved Confluence/GitHub/Jira/Rally MCP servers, or falls under a different category since it's not a comms channel.
+- **Existing consumers of the SQL-string contract:** any caller other than Co-Pilot itself that already depends on the string-based API needs a migration path before that contract can be considered "internal implementation detail" rather than the public one.
+- **Catalog growth vs tool-contract stability:** the catalog is designed to grow via escalation (§4, step ⑧). Tool definitions generated from it need an append-only/versioning discipline so adding a new catalog entry doesn't break agents already integrated against the existing tool set.
+
+### 9.6 Deck structure: what's presentable to senior management vs backup
+
+The v2 material is split across two slides in `QueryCopilot_Highlight.pptx`, on purpose, not by accident:
+
+- **Slide 7 — "Agent-Oriented API Transition — v2 To-Do Plan"** covers only #1+#2 (the six-step plan in §9.2). This is the slide meant for senior-management review.
+- **Slide 8 — "Composite-ID Resolution Service (#3) — Held"** covers only #3 (§9.4), framed as real-value-but-blocked. Kept as a separate, droppable backup page — not intended for the same senior-management audience as Slide 7, since it documents a deferred idea rather than an active plan.
+
+This mirrors the document structure: §9.1–9.3 and 9.5 (the #1+#2 plan) are the active material; §9.4 (held #3) is intentionally self-contained so it can be skipped without losing context on the rest.
+
+---
+
 ## Appendix A — Buy vs Build
 
 We considered buying a semantic-layer / NL-to-SQL product (e.g. Snowflake Cortex Analyst, dbt Semantic Layer + MetricFlow, Cube.dev) instead of building this. **Decision: build.**
@@ -251,6 +317,8 @@ We considered buying a semantic-layer / NL-to-SQL product (e.g. Snowflake Cortex
 ## Status
 
 **v1:** Detailed design (this document) — ready to move from proposal to build, pending sign-off on the build plan (§6) and SME time allocation for composite-identifier documentation, plus a model-tier benchmark (§8) before committing to a timeline.
+
+**v2 (next upgrade, direction agreed — see §9):** Agent-oriented API transition. Ideas #1 (catalog published as agent tools) and #2 (typed/auto-describable OpenAPI contract) selected to pursue together, since they share one underlying schema artifact — see the 6-step to-do plan in §9.2, mirrored as Slide 7 of the deck. Idea #3 (composite-ID resolution as a standalone service) held pending v1's deterministic-assembly module (steps ④⑤) proving out in production — mirrored as the separate, backup-only Slide 8 (§9.6). Not yet scoped into a committed timeline — §9.5 lists what needs resolving first, GTO/MCP policy chief among them.
 
 ---
 
@@ -281,3 +349,7 @@ This design went through multiple rounds of clarification and one explicit direc
 **Phase 11 — Concrete worked example added.** A dedicated stage-by-stage walkthrough (§3) was added — one real request traced from natural language through to a final query awaiting sandbox confirmation — specifically so the pipeline in §4 isn't left abstract.
 
 **Phase 12 — Self-containment gaps closed.** Two gaps were caught by direct questions and fixed: "v1" had been used repeatedly without ever being defined (fixed — see the Executive Summary definition above); and "3 of 9 pipeline steps" referenced a 9-step breakdown that existed only in this document's §4.1 table, never drawn out anywhere a reader could see it without cross-referencing. Fixed by adding a dedicated, fully-labeled 9-step diagram to the deck, with this document's §4 as its documented source rather than an implicit one.
+
+**Phase 13 — v2 direction scoped, three ideas narrowed to two-plus-one-held.** With v1 design accepted as sufficient for now, three candidate directions were proposed for the next upgrade, all responding to the same trend — APIs built for direct agent use rather than requiring a bespoke NL front-end per consumer: (1) publish the Catalog itself as callable agent tools, (2) replace the SQL-string request contract with a typed, auto-describable OpenAPI/JSON-Schema contract, (3) extract composite-ID resolution out of Co-Pilot into its own standalone, independently-callable service. Decision: pursue (1) and (2) together — recognized as one shared schema artifact rather than two separate efforts (§9.2) — and hold (3), since its difficulty is gated by the deterministic-assembly module (steps ④⑤) proving out in production first, not by any lack of value in the idea itself. Recorded as §9, with the underlying-API-unchanged property (§9.3) called out explicitly since it's the reason this upgrade is lower-risk than "add agent support" might otherwise sound.
+
+**Phase 14 — v2 to-do plan drafted, deck restructured, audience-split by slide.** The high-level #1+#2 pairing from Phase 13 was turned into a concrete six-step build sequence (§9.2's table: Define Typed Schema → Publish OpenAPI Contract → Generate Agent Tools → Wrap the Confirm Gate → GTO/MCP Policy Check → Pilot One Domain). The deck (`QueryCopilot_Highlight.pptx`) was restructured from a single combined slide into two: Slide 7 mirrors this six-step plan (#1+#2 only, senior-management-facing), and Slide 8 was split out to carry #3 alone (held, backup-only — explicitly flagged as not necessarily presented to senior management). This audience split is recorded as §9.6 so the reasoning behind the deck's page boundaries doesn't live only in slide notes nobody reads later.

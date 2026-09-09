@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: b57dbea7-e0ff-4ed2-a55d-4625560a26cf
-  modified: 2026-08-25T20:30:05.663Z
+  modified: 2026-09-08T08:00:24.414Z
 ---
 
 Ongoing architecture POC for the GD-Breakdown "Detail" style DB / "Flex-Plot Prototype," evaluating Apache Iceberg + Trino + S3 vs. Snowflake + S3 as the storage backbone. Target milestone noted as 3/27/2026.
@@ -21,6 +21,8 @@ Yu Han has flagged this internally as a likely cornerstone for integrating futur
 **GD-Breakdown POC: weekly status review begins, early technical experiments (12/16/2025)**: Ken started experimenting with the Lago data — running GoldenEagleConsole with a customized `ParameterKeywords.txt` without needing Windows, aggregating data by its `param` column (Chao's idea), and trying a Parquet format for the flattened data. All in-progress; no result yet.
 
 **Architecture direction from Yu Han (12/23/2025)**: converting all NPI data files to a fixed ~70-column layout (GD-category max count + system columns + 6 extra fields); converting CSV→Parquet doesn't meaningfully change file size either way; a set of per-raw-file Parquet files can already support local ad-hoc charting queries. **To-do**: evaluate an Impala- or DuckDB-style engine (both use Parquet as their backing storage format) for large-scale query — preferring a cloud-managed service over one WSD has to deploy/maintain itself.
+
+**TUDAS-EX1 (Expand TAP Collection to MacOS) shipped complete 04/07/2026, ahead of its 04/28/2026 target**: Tingyu built a MacOS-native TAP collector (.NET 8 self-contained console + service, a Launch Agent for auto-start, an installer/uninstaller pair) to support Telecaster — Raptor's ET test system and WSD's "gold standard" ET data source, whose importance was expected to grow as Raptor migrates to its own internal chipset. Trial-released to MacOS production 03/17/2026 with a positive CAT (Kushan/David) demo; CAT completed their own Telecaster-integration and end-user demo by 03/31/2026; after 1 week of clean monitoring, marked complete 04/07/2026. This is the direct fulfillment of the "run TUDAS-EX1 earlier than planned" intent noted at the umbrella's 12/16/2025 kickoff below — it shipped even before the umbrella's own 02/20/2026 target date review.
 
 **"TUDAS-EX1 + TUDAS/FCM Upgrade Cycle" gets a target date and starts landing fixes (12/23/2025)**: target set to **02/20/2026**. TUDAS's Worst-Case-Study portal/API and worker both upgraded to match the FCM worst-case-study worker (new filter-JSON fields, duplicate-spec-record support) — both Complete. Chao started building the FCM Analyzer setup for the Largo project (In Progress). General bug fixes: a Feeder Lambda trigger failure under AWS-support investigation, and a CID-parsing bug for special characters (e.g., "Cliff's Bench") that was breaking web-API collection-progress reporting — the tag-link-sharing half of this fixed, the collection-progress half still in progress.
 

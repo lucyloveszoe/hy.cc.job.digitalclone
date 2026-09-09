@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: c155a9e1-a0c1-49e4-a420-87a1f4788eeb
-  modified: 2026-08-24T03:27:47.968Z
+  modified: 2026-09-08T00:34:53.014Z
 ---
 
 New active-development project (Kin Lum/Choo-Yau), target date **03/28/2025**: enable TVER (calibration) data collection from Inari via Clotho test platform transfer to the CM zDB share folder, cloud-side parsing, and query through WUDAS.
@@ -19,6 +19,8 @@ New active-development project (Kin Lum/Choo-Yau), target date **03/28/2025**: e
 **Core pipeline complete, only WUDAS query integration remains (03/25/2025)**: Kin Lum completed the zDB transfer update (`.tver` collection, post-build auto-pack/CMAC-zip, deployed to INR P13), the Snowflake `COREDATA_56` table + dynamic tables, and the zDB Feeder (incl. unit tests + IaC/Jenkins deployment) — a trial run using 5 golden files successfully collected and parsed into Snowflake. Only the WUDAS API update (to support `tver` tables) and the CLEADA detail-stitching worker/unit test are still in progress, on track for the 04/04/2025 target.
 
 **Completed ahead of schedule (04/01/2025)**: WUDAS API updated to support `tver` tables, CLEADA API config + detail-stitching worker/unit test completed, WUDAS schema doc and core-data SDD updated, Spotfire data function done, and the project formally released — all finished by **03/28/2025**, ahead of the already-once-slipped 04/04/2025 target. Project is now **Complete**.
+
+**Possible earlier origin (unconfirmed) — 05/21/2023**: a WWL report from that date records a PE request from the same requestor (Chun Hao) titled "Collect and enable WUDAS Access for new Tver data type," still pending SOW as of 06/12/2023. Same requestor and same "Tver" name as this 2025 project, but no document was found bridging the ~20-month gap between the 2023 request going quiet and this project's active kickoff in Feb 2025 — treat as a plausible but unconfirmed same-project resumption, not a confirmed continuity.
 
 **Why:** a discrete new data-pipeline commitment with a hard target date, structurally similar to other zDB/WUDAS-family data-type onboarding projects.
 
