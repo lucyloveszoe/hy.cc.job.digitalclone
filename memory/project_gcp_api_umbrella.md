@@ -13,3 +13,5 @@ Yu Han personally set up and owned the "WSD GCP-API Umbrella" project (a GCP API
 **Why:** a recurring infra dependency Yu Han personally drove end-to-end rather than delegating, appearing in nearly every weekly report from ww11 through ww21.
 
 **How to apply:** treat as done/stable going forward unless a future report reopens it. Note: reports contain literal OAuth Client IDs and service-account login details for this project — those were deliberately excluded from memory as credential-like data; do not reconstruct or guess them.
+
+**Ongoing GCP API enablement (ww37-ww40, 09/2026)**: Yu Han enabled Google Slide/Sheet API OAuth client credentials for the "FBARWaferLevelOutlierScreening" project (requested by Hui-Chiang Teoh; 5 GCP APIs enabled by 09/21/2026), and on 09/28 issued the "QRE_ATAParametricDrift" credential for Penang QRE automation (requested by Yoke-Wai Foo, to move personal Box/Google Sheets automations onto the QRE service account). As of 09/28/2026 WSD hosts **7 GCP API projects**.

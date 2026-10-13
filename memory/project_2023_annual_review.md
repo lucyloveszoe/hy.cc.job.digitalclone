@@ -119,3 +119,5 @@ Synthesized from 47 of Yu Han's weekly "WWL" status reports to KP, covering cale
 **How to apply:** treat this as historical/background context, not current state — none of these 2023 initiatives should be assumed still active without confirming against more recent material. Don't force connections to 2025/2026 initiatives (e.g. Mythos, NXG/Raptor) beyond what's explicitly noted above as unconfirmed.
 
 **Note on this file's own provenance**: the opening paragraph's framing ("grep-sampling... week-by-week granularity not preserved") describes only the file's *first* pass. Seven full-detail `/log` batches (ww01-ww52, run 2026-09-07/08) have since read every 2023 WWL report sequentially and layered in the durable facts above — this file is now a full-year, full-detail synthesis, not a sampled one, even though the opening paragraph doesn't say so explicitly.
+
+**See also (2026-10-12)**: gDB WS docs review found the `ebr_records` args still document SQL-fragment operators (`like`, `AND`/`OR`) like the endpoint of this incident, and a precedence trap in the doc example; verify parsing and add negative tests: [[project-gdb-ws-api-doc-review-2026-10]].

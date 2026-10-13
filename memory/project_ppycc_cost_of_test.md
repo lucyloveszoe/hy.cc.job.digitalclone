@@ -19,3 +19,5 @@ A new module (owner: Choo-Yau) built on top of PPYCC (Broadcom's Projection/Plan
 **Why:** a genuine SW-team-owned build project distinct from PPYCC's other WSD-adjacent context (Raptor Serin-push integration, gDB backbone) already tracked elsewhere — this is WSD extending PPYCC's own cost-tracking capability, not consuming it.
 
 **How to apply:** if Yu Han asks about PPYCC "Cost of Test," CoT, or Phase 2 (Project Input database) status, check for updates beyond ww25/06/19/2024 (Phase 2 not yet started as of that date) — this file only covers through mid-2024.
+
+**See also (2026-10-12)**: PPYCC data reachable through gDB WS is the 15 `npip_*` tables; the CoT input DB is not in that list (verify consumption path): [[reference-ppycc-npip-gdb-subset]].

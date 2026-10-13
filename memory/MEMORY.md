@@ -28,7 +28,7 @@
 - [WSD Logistics Data Integrity / IDI](project_wsd_logistics_data_integrity.md) — Wingra's cross-tool design-data integration, Phase 1 (Die Tapeout) shipped, later phases on hold
 - [Penang Real-Time Streaming (TIBCO)](project_penang_realtime_streaming_tibco.md) — vendor (BCT) TIBCO Streambase pipeline for test observability, completed 02/20/2024
 - [Supplier Cybersecurity Audit](project_supplier_cybersecurity_audit.md) — CM/subcon cyber-resiliency audit, Raptor/AIS-driven, Jan 2025
-- [OKTA SSO / Dual-JWT Architecture](project_okta_sso_jwt_architecture.md) — Jan 2025 decision: OKTA-only auth + ID.Pass/access-token dual JWT across WSD web apps; full rollout COMPLETE 05/27/2025
+- [OKTA SSO / Dual-JWT Architecture](project_okta_sso_jwt_architecture.md) — Jan 2025 decision: OKTA-only auth + ID.Pass/access-token dual JWT across WSD web apps; full rollout COMPLETE 05/27/2025; 2026-10-12 Auth-Endpoint doc review appended (improvement opinions, open Qs)
 - [CM/Subcon CI/CD Maintenance Automation](project_cicd_maintenance_automation.md) — WSD.CICD auto-updater, ~100 deployments fleet-wide, completed 01/14/2025
 - [ViTrox Production Toolkit](project_vitrox_production_toolkit.md) — DPAT/LBF decrypt toolkit shipped Jan 2025; VR20 2DID/zDB Type 58 feeder shipped 09/22/2025
 - [AWS VPN SD-WAN Migration](project_aws_vpn_sdwan_migration.md) — Cisco→Velo VPN cutover per BRCM IT, all 3 regions (SG/Tokyo/Oregon) complete 02/11/2025
@@ -51,3 +51,13 @@
 - [Automatic TCF Creation](project_automatic_tcf_creation.md) — cross-region (SJ/Seoul/Penang) TCF-automation investigation, closed 12/23/2024 pending future PE/TDG agreement
 - [Wafer Yield by Radius / DC-2PASS](project_wafer_yield_by_radius_dc2pass.md) — 2024's frozen "Dynamic Wafer Radius Processing" backlog item, shipped complete 06/13/2025 (Sawnics radius calc skipped)
 - [CLEADA Auto-Scaling Cluster](project_cleada_autoscaling_cluster.md) — reserved "L" cluster for high-volume service accounts, shipped complete 12/16/2025
+- [2026 ww37-40 Weekly Review](project_2026_ww37_40_weekly_review.md) — 09/15-10/06 supports/incidents: DPAT/SFTP incidents, SGN MySQL saga, NCDetail 17min→3.5s fix, PPYCC Y048, Agile Support Jira, Snowflake sync
+- [TUDAS API/Manual Review 2026-10](project_tudas_api_doc_review_2026_10.md) — doc contents, memory conflicts, Tier 1-3 improvement proposal + 7 owner decisions (MD+PDF delivered, not decided)
+- [WUDAS API/Schema Review 2026-10](project_wudas_api_doc_review_2026_10.md) — DocFx site + schema Rev 2.16 contents, defects, ranked improvement proposal (not decided)
+- [File Access API Unification 2026-10](project_file_access_api_unification_2026_10.md) — 4 doc families reviewed (FileQuery/CNTrace/ZipScope/dual-token), per-sub-set improvements, layered unify approach, corrections vs earlier findings (legacy shutdown, sgn/lvn pair)
+- [gDB WS API/Docs Review 2026-10](project_gdb_ws_api_doc_review_2026_10.md) — DocFx 62 tables + stale 2023 PDF, plain-HTTP data endpoint, ebr_records SQL-fragment grammar, error/truncation contract, .NET 8 EOL 2026-11-10, ranked proposal (not decided)
+- [PPYCC npip_* Tables in gDB WS](reference_ppycc_npip_gdb_subset.md) — the 15 PPYCC tables exposed via gDB WS: groups, keys, caps, sensitivity, API gaps
+- [DPAT Outlier Access API Review 2026-10](project_dpat_outlier_access_api_review_2026_10.md) — CLEADA dpatoutlierspec/detail docs reviewed, gaps (output undocumented, no discovery, lot-status ambiguity), tiered proposal + 10 owner questions (MD+PDF delivered, not decided)
+- [OEE Report API Review 2026-10](project_oee_report_api_review_2026_10.md) — 1-page docx, 3 CSV reports via one POST; no auth documented, doc defects, Tier 0-4 proposal + 11 owner questions (MD+PDF built, not sent)
+- [DIY (Die Inventory) API Review 2026-10](project_diy_api_doc_review_2026_10.md) — manual contradicts its own Bearer notice (`secret`=email), no responses documented, state-changing GET revert, `default`-stage Lambda to verify, Tier 0-4 proposal, decisions D1-D10, 14 owner questions (MD+PDF and owner-brief PDF built, not sent)
+- [WSD API Unification 2026-10](project_wsd_api_unification_2026_10.md) — umbrella over the 8 family reviews: unify the underlying contract first (9 rules, 4 resource types, shared .NET 10 kit), OpenAPI generated as exposure layer for people/code/agents; U1-U9 proposed, MD+PDF built, not sent
