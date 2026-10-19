@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-Reviewed 2026-10-12 from `cc.brcm/WSD.Artifact.Rig.SW.InfraAPIImprovement.Research/family/dpat-outlier-access/`. Docs only: pages fetched with curl from `http://wsdsgsvc03.sgn.broadcom.net:8080/WSD.Cleada.DocFx/docs/` (HTTP only); live API not called, result CSVs never seen, CLEADA server code, Google Site `sites.google.com/broadcom.com/cleadawsd` and Atropos not reviewed. Write-up: `DPAT_outlier_access_review_and_proposal.md` plus shareable `.pdf` (6 pages, for the project owners) in that folder; evidence snapshot in `review-evidence/docfx_cleada_snapshot_2026-10-12/`.
+Reviewed 2026-10-12 from `cc.brcm/WSD.Artifact.Rig.SW.InfraAPIImprovement.Research/family/cleada/dpat-outlier-access/` (moved from `family/dpat-outlier-access/`). Docs only: pages fetched with curl from `http://wsdsgsvc03.sgn.broadcom.net:8080/WSD.Cleada.DocFx/docs/` (HTTP only); live API not called, result CSVs never seen, CLEADA server code, Google Site `sites.google.com/broadcom.com/cleadawsd` and Atropos not reviewed. Write-up: `DPAT_outlier_access_review_and_proposal.md` plus shareable `.pdf` (6 pages, for the project owners) in that folder; evidence snapshot in `review-evidence/docfx_cleada_snapshot_2026-10-12/`.
 
 **What the docs say (verified from source):**
 - DPAT access = two CLEADA task types on the shared async job API: `dpatoutlierspec` (args `ProductName`, `SpecVersion` e.g. `"1,3"`) and `dpatoutlierdetail` (args `ProductName`, `LotID` comma list). Body is `{name, scope:"m", args}`.
@@ -21,3 +21,5 @@ Reviewed 2026-10-12 from `cc.brcm/WSD.Artifact.Rig.SW.InfraAPIImprovement.Resear
 **How to apply:** treat as a backlog source, not commitments. Status: proposal only, nothing decided. The 10 owner questions at the end of the write-up (CSV columns, `SpecVersion` semantics, `scope`, code per case, lot limits, per-product access, retention, real consumers) should go to the CLEADA/DPAT owners before opening Jira items. Related auth review: [[project-okta-sso-jwt-architecture]]; sibling reviews: [[project-wudas-api-doc-review-2026-10]], [[project-tudas-api-doc-review-2026-10]].
 
 **Cross-family umbrella (2026-10-12):** unify the contract first, then generate OpenAPI; see [[project-wsd-api-unification-2026-10]].
+
+**Update 2026-10-13:** pages re-fetched, unchanged. The Glacier page, only skimmed here, is now reviewed in full and combined with this one into a single CLEADA plan: [[project-cleada-glacier-api-review-2026-10]]. New cross-finding: `scope` is `m` for DPAT and `g` for Glacier, client-chosen, while the server router already picks lanes.

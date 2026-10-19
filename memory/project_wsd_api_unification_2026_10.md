@@ -18,3 +18,11 @@ Written 2026-10-12 in `cc.brcm/WSD.Artifact.Rig.SW.InfraAPIImprovement.Research/
 **Decisions proposed (U1-U9, none made):** adopt contract; shared kit; WUDAS as reference with DPAT; generated spec; 3.0.3; legacy adapters then Sunset; shared CSV column descriptor; read/write scopes with agent tools read-only and GTO gate; name an owner for the kit.
 
 **How to apply:** treat as the umbrella over the per-family reviews. Do not propose writing specs over current APIs as "unification"; propose contract change first. Next when Yu Han picks it up: send `unification.pdf` to the owners, collect section-8 answers and per-family Tier 0 answers, agree U1-U9, then open Jira items.
+
+**Further family (2026-10-13):** Wafer Regen API reviewed separately, see [[project-wafer-regen-api-review-2026-10]]. Already close to the unified contract (pre-v1); proposed reference for async + mutation patterns. `unification.md` still says eight families and was not edited.
+
+**Further family (2026-10-13):** WSD.Kafka HTTP API reviewed, see [[project-wsd-kafka-api-review-2026-10]]; suggests a fifth resource type "ingest" (event produce) beside the four above. Umbrella doc not yet updated.
+
+**Later family (2026-10-13):** STAVI (`stavi-query`, ST Micro AVI) reviewed; see [[project-stavi-api-review-2026-10]] (round 2 against the new DocFx site; unification.md/pdf STAVI row updated). Maps to dataset-query plus file-access types.
+
+**Update 2026-10-13:** CLEADA now has a consolidated review (Glacier + DPAT + job API) mapped to these rules in section 7: [[project-cleada-glacier-api-review-2026-10]].
