@@ -1,6 +1,6 @@
 ---
-name: project_wsd_data_access_copilot
-description: "WSD Data Access Co-Pilot design (NL query access via LLM-classify + deterministic-execute) — v1 design done, v2 agent-transition direction agreed, paused for later continuation"
+name: project-wsd-data-access-copilot
+description: "WSD Data Access Co-Pilot design (NL query access via LLM-classify + deterministic-execute) — v1 design complete (not built), v2 agent-transition direction agreed; In Progress as WDAC evaluation per WWL ww37-39 (was paused 2026-09-07)"
 metadata: 
   node_type: memory
   type: project

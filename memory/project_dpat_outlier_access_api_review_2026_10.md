@@ -23,3 +23,5 @@ Reviewed 2026-10-12 from `cc.brcm/WSD.Artifact.Rig.SW.InfraAPIImprovement.Resear
 **Cross-family umbrella (2026-10-12):** unify the contract first, then generate OpenAPI; see [[project-wsd-api-unification-2026-10]].
 
 **Update 2026-10-13:** pages re-fetched, unchanged. The Glacier page, only skimmed here, is now reviewed in full and combined with this one into a single CLEADA plan: [[project-cleada-glacier-api-review-2026-10]]. New cross-finding: `scope` is `m` for DPAT and `g` for Glacier, client-chosen, while the server router already picks lanes.
+
+**Update 2026-10-21:** CLEADA round 2 cross-read DPAT against the ZDB schema PDF: DPAT is absent from the PDF, its inputs (`ProductName`, lots) match the PDF's mandatory-filter sets, `Product`/`Lot` can serve existence checks, and DPAT `SpecVersion` is not the PDF's test-spec `SpecVersion`. Option CL-D would expose DPAT as WUDAS tables if output is stored data. See [[project-cleada-glacier-api-review-2026-10]].

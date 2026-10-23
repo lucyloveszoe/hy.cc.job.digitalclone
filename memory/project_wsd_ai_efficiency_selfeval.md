@@ -1,5 +1,5 @@
 ---
-name: project_wsd_ai_efficiency_selfeval
+name: project-wsd-ai-efficiency-selfeval
 description: "WSD-wide Claude Code efficiency self-eval framework + Google Form survey rollout — decisions, files, status"
 metadata: 
   node_type: memory
@@ -10,8 +10,7 @@ metadata:
 
 Yu Han is building a WSD-wide "Claude Code efficiency self-eval" initiative: a 12-metric
 checklist (Hard Metrics / Usage Behavior / Red Flags categories) scored 1-5 per metric,
-weighted differently by ICB level (see [[project_org_ai_transition_deck]] if that gets
-written — for now, the level framework lives in the "Organization Transition" slide of
+weighted differently by ICB level (the level framework lives in the "Organization Transition" slide of
 the WSD-SWTeam-NextToDo-AI-Plan deck). Collected via a role-tagged (no name/email) Google
 Form that Yu Han builds and runs himself with his own Workspace credential — this is a
 manual human action, not an MCP/agent integration, so it doesn't run into the
@@ -36,7 +35,7 @@ project itself. Feeds into a future "WSD AI Efficiency Profile" aggregation.
   survey fatigue for an org-wide rollout.
 
 **Why this memory exists:** this is a multi-session initiative tied to
-[[project_genai_program]] and the ICB-level AI growth framework. The full reasoning and
+[[project-genai-program]] and the ICB-level AI growth framework. The full reasoning and
 file list lives in a `CLAUDE_SelfEval.md` handoff doc that travels with the deliverable
 files themselves (originally created under
 `C:\Temp\work-I_2026.08.21\WSD_GenAI\wsd-ai-activities\swteam-ai-discussion\round_2_wrapup\`,
