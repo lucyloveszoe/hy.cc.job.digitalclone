@@ -23,3 +23,5 @@ Kin Lum proposed building a next-gen ("NXG") framework based on a schema-driven 
 **ww41 update (10/13/2026)**: **(I) Feeder moved to Completed Projects ("Completed @ 10/13/2026")** — all 12 types deployed (Type 1-ModuleCsv was the last, WW39), with a final one-week no-issue watch noted before the formal mark. The WUDAS non-FBAR pass-bin change is deployed via the new Zdb.Feeder schema, awaiting Min Yoke's buy-off. (II) Transfer & CI/CD is in the active queue (target TBD); (III) CLEADA Details Stitcher is still only "Initiated" (last status 08/04). See [[project-2026-ww41-weekly-review]].
 
 **ww42 update (10/20/2026)**: internal sync decided to **hold (II) Transfer & CI/CD until the pCD-V official release**. The pass-bin criteria change is now listed Complete with Min Yoke's buy-off. (III) unchanged. See [[project-2026-ww42-weekly-review]].
+
+**ww43-44 update (10/27-11/03/2026)**: (II) Transfer & CI/CD now "Prepare SOW"; reported in the Q4'26 QBR as a Q1'27 high-priority project; (III) CLEADA Stitcher "Ideas", Q2'27 high priority. Feeder & Scheduler (SW-72) confirmed DONE 10/09 in the JIRA plan. See [[project-2026-ww43-44-weekly-review]].
